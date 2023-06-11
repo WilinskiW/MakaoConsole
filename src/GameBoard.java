@@ -40,10 +40,22 @@ public class GameBoard {
         }
     }
 
+    public Queue<Card> getBoardDeck() {
+        return boardDeck;
+    }
+
+    public Deque<Card> getStack() {
+        return stack;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
     @Override
     public String toString() {
         return "GameBoard{" +
-                "boardDeck=" + boardDeck +
+                "boardDeck=" + boardDeck + " " + boardDeck.size() +
                 ", players=" + players +
                 ", stack=" + stack +
                 '}';

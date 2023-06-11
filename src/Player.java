@@ -4,7 +4,7 @@ import java.util.Queue;
 
 public class Player {
     private final int id;
-    private List<Card> cards;
+    private final List<Card> cards;
 
     public Player(int id, List<Card> cards) {
         this.id = id;
@@ -15,7 +15,18 @@ public class Player {
         cards.add(card);
     }
 
+    public void putTheCardOut(Card card){
+        cards.remove(card);
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
 
     @Override
     public String toString() {
