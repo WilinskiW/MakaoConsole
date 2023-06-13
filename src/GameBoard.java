@@ -44,6 +44,19 @@ public class GameBoard {
         stack.add(boardDeck.poll());
     }
 
+    public void addCardToStack(Card card){
+        stack.add(card);
+    }
+
+    public boolean compareCards(Card card1, Card card2){
+        return card1.getSuit() == card2.getSuit() || card1.getRank() == card2.getRank();
+    }
+
+    public void putCardOnStack(Card card, Player user){
+        addCardToStack(card);
+        user.removeCard(card);
+    }
+
     public Queue<Card> getBoardDeck() {
         return boardDeck;
     }

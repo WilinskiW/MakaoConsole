@@ -1,6 +1,5 @@
 
 import java.util.List;
-import java.util.Queue;
 
 public class Player {
     private final int id;
@@ -15,9 +14,8 @@ public class Player {
         cards.add(card);
     }
 
-    public void putTheCardOut(Card card){
+    public void removeCard(Card card){
         cards.remove(card);
-
     }
 
     public int getId() {
