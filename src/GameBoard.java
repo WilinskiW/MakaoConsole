@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class GameBoard {
-    private final Queue<Card> boardDeck;
+    private Queue<Card> boardDeck;
     private List<Player> players;
     private final Deque<Card> stack = new LinkedList<>();
 
@@ -55,6 +55,28 @@ public class GameBoard {
     public void putCardOnStack(Card card, Player user){
         addCardToStack(card);
         user.removeCard(card);
+    }
+
+    public void checkVictoryStatus(Player player){
+        if(player.getCards().size() == 0){
+            player.setWinner(true);
+        }
+    }
+
+    private void refreshBoardDeck(){
+        LinkedList<Card> newDeck = new LinkedList<>();
+
+        for(int cardIndex = 0 ; cardIndex < stack.size()-1; cardIndex++){
+            newDeck.add(stack.getFirst());
+        }
+
+        this.boardDeck = newDeck;
+    }
+
+    public void checkBoardDeckStatus(){
+        if(boardDeck.size() == 1){
+            refreshBoardDeck();
+        }
     }
 
     public Queue<Card> getBoardDeck() {

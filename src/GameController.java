@@ -22,7 +22,6 @@ public class GameController {
     }
 
     private void playTurn(int players) {
-        boolean isVictoryAchieve = false;
 
         do {
             playerTurn();
@@ -30,7 +29,7 @@ public class GameController {
                 computerTurn(id);
             }
         }
-        while (!isVictoryAchieve);
+        while (!isVictoryAchieve());
 
     }
 
@@ -41,7 +40,7 @@ public class GameController {
         System.out.println("///// Tura Gracza " + player.getId() + " /////");
         System.out.println("Karta na stosie: " + gameBoard.getStack().getLast());
         System.out.println("0. Dobierz kartę");
-        for (int i = 1; i < player.getCards().size(); i++) {
+        for (int i = 0; i < player.getCards().size(); i++) {
             System.out.println(i + 1 + ". " + player.getCards().get(i));
         }
 
@@ -62,7 +61,8 @@ public class GameController {
             gameBoard.putCardOnStack(chosenCard, player);
         }
 
-
+        gameBoard.checkVictoryStatus(player);
+        gameBoard.checkBoardDeckStatus();
     }
 
 
@@ -74,8 +74,8 @@ public class GameController {
 
 
         System.out.println("///// Tura Gracza " + computer.getId() + " /////");
-        System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
         System.out.println("Karta na wierzchu stosu: " + stackCard);
+        System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
 
 
         for (int i = 0; i < amountOfCards; i++) {
@@ -91,9 +91,12 @@ public class GameController {
             System.out.println("Gracz " + computer.getId() + " używa " + chosenCard + " karty");
             gameBoard.putCardOnStack(chosenCard, computer);
         } else {
+            System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
             computer.giveCard(gameBoard.getBoardDeck().poll());
         }
 
+        gameBoard.checkVictoryStatus(computer);
+        gameBoard.checkBoardDeckStatus();
     }
 
 
@@ -127,6 +130,12 @@ public class GameController {
     }
 
     private boolean isVictoryAchieve() {
+        for(Player player : gameBoard.getPlayers()){
+            if(player.isWinner()){
+                System.out.println("Wygrywa Gracz " + player.getId());
+                return true;
+            }
+        }
         return false;
     }
 

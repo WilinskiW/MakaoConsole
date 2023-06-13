@@ -4,6 +4,7 @@ import java.util.List;
 public class Player {
     private final int id;
     private final List<Card> cards;
+    private boolean isWinner = false;
 
     public Player(int id, List<Card> cards) {
         this.id = id;
@@ -16,6 +17,14 @@ public class Player {
 
     public void removeCard(Card card){
         cards.remove(card);
+    }
+
+    public void setWinner(boolean winner) {
+        isWinner = winner;
+    }
+
+    public boolean isWinner() {
+        return isWinner;
     }
 
     public int getId() {
