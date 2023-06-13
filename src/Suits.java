@@ -8,5 +8,7 @@ public enum Suits {
     Club - Trefl
     Spade - Pik
      */
+
+
 }
 

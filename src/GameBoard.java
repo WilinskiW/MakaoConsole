@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class GameBoard {
-    private Queue<Card> boardDeck;
+    private final Queue<Card> boardDeck;
     private List<Player> players;
     private final Deque<Card> stack = new LinkedList<>();
 
@@ -38,6 +38,10 @@ public class GameBoard {
                 player.giveCard(boardDeck.poll());
             }
         }
+    }
+
+    public void putStartingCardOnStack(){
+        stack.add(boardDeck.poll());
     }
 
     public Queue<Card> getBoardDeck() {
