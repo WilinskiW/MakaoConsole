@@ -24,16 +24,20 @@ public class GameController {
     private void playTurn(int players) {
 
         do {
-            playerTurn();
-            for (int id = 2; id <= players; id++) {
-                computerTurn(id);
+            if (!playerTurn()) {
+                for (int id = 2; id <= players; id++) {
+                    if(computerTurn(id)){
+                        break;
+                    }
+
+                }
             }
         }
         while (!isVictoryAchieve());
 
     }
 
-    private void playerTurn() {
+    private boolean playerTurn() {
         Player player = gameBoard.getPlayers().get(0);
         int amountOfCards = player.getCards().size();
 
@@ -61,12 +65,13 @@ public class GameController {
             gameBoard.putCardOnStack(chosenCard, player);
         }
 
-        gameBoard.checkVictoryStatus(player);
+        gameBoard.setVictoryStatus(player);
         gameBoard.checkBoardDeckStatus();
+        return player.isWinner();
     }
 
 
-    private void computerTurn(int id) {
+    private boolean computerTurn(int id) {
         Player computer = gameBoard.getPlayers().get(id - 1);
         int amountOfCards = computer.getCards().size();
         Card stackCard = gameBoard.getStack().getLast();
@@ -95,8 +100,9 @@ public class GameController {
             computer.giveCard(gameBoard.getBoardDeck().poll());
         }
 
-        gameBoard.checkVictoryStatus(computer);
+        gameBoard.setVictoryStatus(computer);
         gameBoard.checkBoardDeckStatus();
+        return computer.isWinner();
     }
 
 
@@ -130,8 +136,8 @@ public class GameController {
     }
 
     private boolean isVictoryAchieve() {
-        for(Player player : gameBoard.getPlayers()){
-            if(player.isWinner()){
+        for (Player player : gameBoard.getPlayers()) {
+            if (player.isWinner()) {
                 System.out.println("Wygrywa Gracz " + player.getId());
                 return true;
             }

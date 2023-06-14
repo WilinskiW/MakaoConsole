@@ -34,7 +34,7 @@ public class GameBoard {
 
     public void givePlayersStartingCards(){
         for(Player player : players){
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < 1; i++){
                 player.giveCard(boardDeck.poll());
             }
         }
@@ -57,7 +57,7 @@ public class GameBoard {
         user.removeCard(card);
     }
 
-    public void checkVictoryStatus(Player player){
+    public void setVictoryStatus(Player player){
         if(player.getCards().size() == 0){
             player.setWinner(true);
         }
