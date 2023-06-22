@@ -18,104 +18,6 @@ public class GameController {
         System.out.println(gameBoard);
     }
 
-    private void playTurn(int players) {
-
-        do {
-            if (!playerTurn()) {
-                for (int id = 2; id <= players; id++) {
-                    if (computerTurn(id)) {
-                        break;
-                    }
-                }
-            }
-        }
-        while (!isVictoryAchieve());
-
-    }
-
-    private boolean playerTurn() {
-        Player player = gameBoard.getPlayers().get(0);
-        int amountOfCards = player.getCards().size();
-
-        System.out.println("///// Tura Gracza " + player.getId() + " /////");
-        System.out.println("Karta na stosie: " + gameBoard.getStack().getLast());
-        System.out.println("0. Dobierz kartę");
-        for (int i = 0; i < player.getCards().size(); i++) {
-            System.out.println(i + 1 + ". " + player.getCards().get(i));
-        }
-
-        //Akcje gracza:
-        if(!player.isWaiting()) {
-            int playerChoice;
-            Scanner scanner = new Scanner(System.in);
-            do {
-                System.out.println("Podaj liczbę od 0 do " + amountOfCards);
-                playerChoice = scanner.nextInt();
-            }
-            while (!((playerChoice >= 0 && playerChoice <= amountOfCards) && isChoiceCorrect(playerChoice)));
-
-            if (playerChoice == 0) {
-                player.giveCard(gameBoard.getBoardDeck().poll());
-            } else {
-                Card chosenCard = player.getCards().get(playerChoice - 1);
-                gameBoard.putCardOnStack(chosenCard, player);
-                gameBoard.useCardAbility(chosenCard, player.getId());
-            }
-
-            gameBoard.setVictoryStatus(player);
-        }
-        else {
-            System.out.println("Gracz " + player.getId() + " czeka");
-            player.setWaiting(false);
-        }
-        gameBoard.checkBoardDeckStatus();
-
-        return player.isWinner();
-    }
-
-
-    private boolean computerTurn(int id) {
-        Player computer = gameBoard.getPlayers().get(id - 1);
-        int amountOfCards = computer.getCards().size();
-        Card stackCard = gameBoard.getStack().getLast();
-        List<Card> validCards = new ArrayList<>();
-
-
-        System.out.println("///// Tura Gracza " + computer.getId() + " /////");
-        if(!computer.isWaiting()) {
-            System.out.println("Karta na wierzchu stosu: " + stackCard);
-            System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
-
-
-            for (int i = 0; i < amountOfCards; i++) {
-                Card checkedCard = computer.getCards().get(i);
-                if (gameBoard.compareCards(checkedCard, stackCard)) {
-                    validCards.add(checkedCard);
-                }
-            }
-            if (validCards.size() != 0) {
-                Collections.shuffle(validCards);
-                Card chosenCard = validCards.get(0);
-
-                System.out.println("Gracz " + computer.getId() + " używa " + chosenCard + " karty");
-                gameBoard.putCardOnStack(chosenCard, computer);
-            } else {
-                System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
-                computer.giveCard(gameBoard.getBoardDeck().poll());
-            }
-
-            gameBoard.setVictoryStatus(computer);
-        }
-        else {
-            System.out.println("Gracz " + computer.getId() + " czeka");
-            computer.setWaiting(false);
-        }
-        gameBoard.checkBoardDeckStatus();
-
-        return computer.isWinner();
-    }
-
-
     private int decideHowManyPlayers() {
         Scanner scanner = new Scanner(System.in);
         int amountOfPlayers;
@@ -129,23 +31,159 @@ public class GameController {
         return amountOfPlayers;
     }
 
-    private boolean isChoiceCorrect(int choice) {
-        if (choice == 0) {
+    private void playTurn(int players) {
+        do {
+            boolean humanWon = humanTurn();
+            if (humanWon) {
+                continue;
+            }
+            computerTurns(players);
+        } while (!isVictoryAchieve());
+    }
+
+    private boolean humanTurn() {
+        Player human = gameBoard.getPlayers().get(0);
+
+        int amountOfCards = human.getCards().size();
+        if (human.isSkipTurnActive()) {
+            executeSkipTurnSpecial(human);
+            return human.isWinner();
+        }
+        showTurnOptions(human);
+        boolean turnEnded;
+        do {
+            int playerChoice = checkHumanChoice(amountOfCards);
+            turnEnded = executeTurn(playerChoice, human);
+        }
+        while (!turnEnded);
+        endTurnUpdate(human);
+
+        return human.isWinner();
+    }
+
+    private void executeSkipTurnSpecial(Player player) {
+        System.out.println("Gracz " + player.getId() + " czeka");
+        player.setSkipTurnActive(false);
+        gameBoard.checkBoardDeckStatus();
+    }
+
+    private void showTurnOptions(Player player) {
+        System.out.println("///// Tura Gracza " + player.getId() + " /////");
+        System.out.println("Karta na stosie: " + gameBoard.getStack().getLast());
+        System.out.println("0. Dobierz kartę");
+        for (int i = 0; i < player.getCards().size(); i++) {
+            System.out.println(i + 1 + ". " + player.getCards().get(i));
+        }
+    }
+
+    private int checkHumanChoice(int amountOfCards) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Podaj liczbę od 0 do " + amountOfCards);
+        return scanner.nextInt();
+    }
+
+    private boolean executeTurn(int playerChoice, Player player) { //boolean - czy tura zakończona
+        if (playerChoice == 0) { //dobiera
+            player.giveCard(gameBoard.getBoardDeck().poll());
             return true;
         }
+        //wybrana karta
+        System.out.println("czy karta poprawna?");
+        if (isCorrectCard(playerChoice, player.getCards(),player)) {
+            Card chosenCard = player.getCards().get(playerChoice - 1);
+            gameBoard.putCardOnStack(chosenCard, player);
+            gameBoard.useCardAbility(chosenCard, player.getId());
+            return true;
+        } else {
+            System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
+        }
+        return false;
+    }
 
-        Card chosenCard = gameBoard.getPlayers().get(0).getCards().get(choice - 1);
+    private void endTurnUpdate(Player player) {
+        gameBoard.setVictoryStatus(player);
+        gameBoard.checkBoardDeckStatus();
+    }
+
+    private void computerTurns(int players) {
+        for (int id = 2; id <= players; id++) { //tury komputera
+            if (computerTurn(id)) {
+                break;
+            }
+        }
+    }
+
+    private boolean computerTurn(int id) {
+        Player computer = gameBoard.getPlayers().get(id - 1);
+        int amountOfCards = computer.getCards().size();
         Card stackCard = gameBoard.getStack().getLast();
 
-        if (gameBoard.compareCards(stackCard, chosenCard)) {
-            return true;
-        } else if(chosenCard.getRank().name().equals("Q")) {
-            System.out.println("||||||||||Położono Q||||||||||");
-            return true;
+        if (computer.isSkipTurnActive()) {
+            executeSkipTurnSpecial(computer);
         }
-            System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
+        showComputerInformation(stackCard, computer, amountOfCards);
+
+        List<Card> validCards = findValidCards(amountOfCards, computer, stackCard);
+        boolean turnEnded;
+
+        do {
+            int playerChoice = checkComputerChoice(validCards,computer);
+            turnEnded = executeTurn(playerChoice, computer);
+        }
+        while (!turnEnded);
+
+        endTurnUpdate(computer);
+
+        return computer.isWinner();
+    }
+
+    //generowanie valid kart
+    //numer <- player wybiera kartę lub dobieranie
+    //numer ->  karta jest zagrana lub dobrana
+    //powtarzanie wyboru jeśli niepoprany
+
+
+    private void showComputerInformation(Card stackCard, Player computer, int amountOfCards) {
+        System.out.println("///// Tura Gracza " + computer.getId() + " /////");
+        System.out.println("Karta na wierzchu stosu: " + stackCard);
+        System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
+    }
+
+    private List<Card> findValidCards(int amountOfCards, Player player, Card stackCard) {
+        List<Card> validCards = new ArrayList<>();
+        for (int i = 0; i < amountOfCards; i++) {
+            Card checkedCard = player.getCards().get(i);
+            if (gameBoard.compareCards(checkedCard, stackCard)) {
+                validCards.add(checkedCard);
+            }
+        }
+        return validCards;
+    }
+
+    private int checkComputerChoice(List<Card> validCards, Player computer) {
+        System.out.println("computer valid cards: " + validCards);
+        if(validCards.isEmpty()){
+            return 0;
+        }
+
+        return new Random().nextInt(computer.getCards().size())+1;
+    }
+
+    private void drawCard(Player computer) {
+        System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
+        computer.giveCard(gameBoard.getBoardDeck().poll());
+    }
+
+
+    private boolean isCorrectCard(int choice, List<Card> playerCards, Player player) {
+        Card stackCard = gameBoard.getStack().getLast();
+        if (choice == 0 || choice >= playerCards.size()) {
             return false;
         }
+        Card chosenCard = player.getCards().get(choice - 1);
+
+        return gameBoard.compareCards(chosenCard, stackCard);
+    }
 //todo dodać warunek do Jokera i samego Jokera
 
 

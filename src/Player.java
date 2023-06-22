@@ -5,7 +5,7 @@ public class Player {
     private final int id;
     private final List<Card> cards;
     private boolean isWinner = false;
-    private boolean isWaiting = false;
+    private boolean skipTurnActive = false;
 
     public Player(int id, List<Card> cards) {
         this.id = id;
@@ -24,8 +24,8 @@ public class Player {
         isWinner = winner;
     }
 
-    public void setWaiting(boolean waiting) {
-        isWaiting = waiting;
+    public void setSkipTurnActive(boolean skipTurnActive) {
+        this.skipTurnActive = skipTurnActive;
     }
 
     public boolean isWinner() {
@@ -36,8 +36,8 @@ public class Player {
         return id;
     }
 
-    public boolean isWaiting() {
-        return isWaiting;
+    public boolean isSkipTurnActive() {
+        return skipTurnActive;
     }
 
     public List<Card> getCards() {

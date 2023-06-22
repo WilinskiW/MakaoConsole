@@ -131,10 +131,10 @@ public class GameBoard {
     public void wait(int currentPlayerId){
         int lastIndex = players.size() - 1;
         if(lastIndex != currentPlayerId) {
-            players.get(currentPlayerId + 1).setWaiting(true);
+            players.get(currentPlayerId + 1).setSkipTurnActive(true);
         }
         else {
-            players.get(0).setWaiting(true);
+            players.get(0).setSkipTurnActive(true);
         }
     }
 
