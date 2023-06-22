@@ -32,50 +32,109 @@ public class GameBoard {
         this.players = players;
     }
 
-    public void givePlayersStartingCards(){
-        for(Player player : players){
-            for(int i = 0; i < 1; i++){
+    public void givePlayersStartingCards() {
+        for (Player player : players) {
+            for(int i = 0 ; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
             }
         }
     }
 
-    public void putStartingCardOnStack(){
+    public void putStartingCardOnStack() {
         stack.add(boardDeck.poll());
     }
 
-    public void addCardToStack(Card card){
+    public void addCardToStack(Card card) {
         stack.add(card);
     }
 
-    public boolean compareCards(Card card1, Card card2){
+    public boolean compareCards(Card card1, Card card2) {
         return card1.getSuit() == card2.getSuit() || card1.getRank() == card2.getRank();
     }
 
-    public void putCardOnStack(Card card, Player user){
+    public void putCardOnStack(Card card, Player user) {
         addCardToStack(card);
         user.removeCard(card);
     }
 
-    public void setVictoryStatus(Player player){
-        if(player.getCards().size() == 0){
+    public void setVictoryStatus(Player player) {
+        if (player.getCards().size() == 0) {
             player.setWinner(true);
         }
     }
 
-    private void refreshBoardDeck(){
+    private void refreshBoardDeck() {
         LinkedList<Card> newDeck = new LinkedList<>();
 
-        for(int cardIndex = 0 ; cardIndex < stack.size()-1; cardIndex++){
+        for (int cardIndex = 0; cardIndex < stack.size() - 1; cardIndex++) {
             newDeck.add(stack.getFirst());
         }
 
         this.boardDeck = newDeck;
     }
 
-    public void checkBoardDeckStatus(){
-        if(boardDeck.size() == 1){
+    public void checkBoardDeckStatus() {
+        if (boardDeck.size() == 1) {
             refreshBoardDeck();
+        }
+    }
+
+    public void useCardAbility(Card card, int currentPlayerId) {
+        String cardNameRank = card.getRank().name();
+
+        switch (cardNameRank) {
+            case "TWO" -> plusTwo(currentPlayerId);
+            case "THREE" -> plusThree(currentPlayerId);
+            case "FOUR" -> wait(currentPlayerId);
+            case "J" -> System.out.println("Demand");
+            case "AS" -> System.out.println("Change suit");
+            case "K" -> System.out.println("King Exception");
+            default -> System.out.println("The rest of the cards");
+        }
+    }
+
+    public void plusTwo(int currentPlayerId) {
+        int lastIndex = players.size() - 1;
+        if (currentPlayerId != lastIndex) {
+            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
+            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
+            System.out.println("+2");
+        }
+        else {
+            players.get(0).giveCard(boardDeck.poll());
+            players.get(0).giveCard(boardDeck.poll());
+            System.out.println("+2");
+        }
+    }
+
+    public void plusThree(int currentPlayerId){
+        int lastIndex = players.size() - 1;
+        if (currentPlayerId != lastIndex) {
+            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
+            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
+            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
+
+            System.out.println(players.get(currentPlayerId + 1).getCards());
+        }
+        else {
+            players.get(0).giveCard(boardDeck.poll());
+            players.get(0).giveCard(boardDeck.poll());
+            players.get(0).giveCard(boardDeck.poll());
+
+            System.out.println(players.get(0).getCards());
+        }
+
+    }
+
+    //todo Do ulepszenia 
+
+    public void wait(int currentPlayerId){
+        int lastIndex = players.size() - 1;
+        if(lastIndex != currentPlayerId) {
+            players.get(currentPlayerId + 1).setWaiting(true);
+        }
+        else {
+            players.get(0).setWaiting(true);
         }
     }
 
@@ -91,6 +150,7 @@ public class GameBoard {
         return players;
     }
 
+
     @Override
     public String toString() {
         return "GameBoard{" +
@@ -100,5 +160,5 @@ public class GameBoard {
                 '}';
     }
 
-
+    //
 }

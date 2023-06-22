@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameController {
     private final GameBoard gameBoard = new GameBoard();
@@ -26,10 +23,9 @@ public class GameController {
         do {
             if (!playerTurn()) {
                 for (int id = 2; id <= players; id++) {
-                    if(computerTurn(id)){
+                    if (computerTurn(id)) {
                         break;
                     }
-
                 }
             }
         }
@@ -49,24 +45,31 @@ public class GameController {
         }
 
         //Akcje gracza:
+        if(!player.isWaiting()) {
+            int playerChoice;
+            Scanner scanner = new Scanner(System.in);
+            do {
+                System.out.println("Podaj liczbę od 0 do " + amountOfCards);
+                playerChoice = scanner.nextInt();
+            }
+            while (!((playerChoice >= 0 && playerChoice <= amountOfCards) && isChoiceCorrect(playerChoice)));
 
-        Scanner scanner = new Scanner(System.in);
-        int playerChoice;
-        do {
-            System.out.println("Podaj liczbę od 0 do " + amountOfCards);
-            playerChoice = scanner.nextInt();
+            if (playerChoice == 0) {
+                player.giveCard(gameBoard.getBoardDeck().poll());
+            } else {
+                Card chosenCard = player.getCards().get(playerChoice - 1);
+                gameBoard.putCardOnStack(chosenCard, player);
+                gameBoard.useCardAbility(chosenCard, player.getId());
+            }
+
+            gameBoard.setVictoryStatus(player);
         }
-        while (!((playerChoice >= 0 && playerChoice <= amountOfCards) && isChoiceCorrect(playerChoice)));
-
-        if (playerChoice == 0) {
-            player.giveCard(gameBoard.getBoardDeck().poll());
-        } else {
-            Card chosenCard = player.getCards().get(playerChoice - 1);
-            gameBoard.putCardOnStack(chosenCard, player);
+        else {
+            System.out.println("Gracz " + player.getId() + " czeka");
+            player.setWaiting(false);
         }
-
-        gameBoard.setVictoryStatus(player);
         gameBoard.checkBoardDeckStatus();
+
         return player.isWinner();
     }
 
@@ -79,29 +82,36 @@ public class GameController {
 
 
         System.out.println("///// Tura Gracza " + computer.getId() + " /////");
-        System.out.println("Karta na wierzchu stosu: " + stackCard);
-        System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
+        if(!computer.isWaiting()) {
+            System.out.println("Karta na wierzchu stosu: " + stackCard);
+            System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
 
 
-        for (int i = 0; i < amountOfCards; i++) {
-            Card checkedCard = computer.getCards().get(i);
-            if (gameBoard.compareCards(checkedCard, stackCard)) {
-                validCards.add(checkedCard);
+            for (int i = 0; i < amountOfCards; i++) {
+                Card checkedCard = computer.getCards().get(i);
+                if (gameBoard.compareCards(checkedCard, stackCard)) {
+                    validCards.add(checkedCard);
+                }
             }
-        }
-        if (validCards.size() != 0) {
-            Collections.shuffle(validCards);
-            Card chosenCard = validCards.get(0);
+            if (validCards.size() != 0) {
+                Collections.shuffle(validCards);
+                Card chosenCard = validCards.get(0);
 
-            System.out.println("Gracz " + computer.getId() + " używa " + chosenCard + " karty");
-            gameBoard.putCardOnStack(chosenCard, computer);
-        } else {
-            System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
-            computer.giveCard(gameBoard.getBoardDeck().poll());
-        }
+                System.out.println("Gracz " + computer.getId() + " używa " + chosenCard + " karty");
+                gameBoard.putCardOnStack(chosenCard, computer);
+            } else {
+                System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
+                computer.giveCard(gameBoard.getBoardDeck().poll());
+            }
 
-        gameBoard.setVictoryStatus(computer);
+            gameBoard.setVictoryStatus(computer);
+        }
+        else {
+            System.out.println("Gracz " + computer.getId() + " czeka");
+            computer.setWaiting(false);
+        }
         gameBoard.checkBoardDeckStatus();
+
         return computer.isWinner();
     }
 
@@ -124,16 +134,20 @@ public class GameController {
             return true;
         }
 
-        Card stackCard = gameBoard.getStack().getLast();
         Card chosenCard = gameBoard.getPlayers().get(0).getCards().get(choice - 1);
+        Card stackCard = gameBoard.getStack().getLast();
 
         if (gameBoard.compareCards(stackCard, chosenCard)) {
             return true;
-        } else {
+        } else if(chosenCard.getRank().name().equals("Q")) {
+            System.out.println("||||||||||Położono Q||||||||||");
+            return true;
+        }
             System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
             return false;
         }
-    }
+//todo dodać warunek do Jokera i samego Jokera
+
 
     private boolean isVictoryAchieve() {
         for (Player player : gameBoard.getPlayers()) {
