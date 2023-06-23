@@ -85,17 +85,18 @@ public class GameController {
     private boolean executeTurn(int playerChoice, Player player) { //boolean - czy tura zakończona
         if (playerChoice == 0) { //dobiera
             player.giveCard(gameBoard.getBoardDeck().poll());
+            System.out.println("Gracz dobiera");
             return true;
         }
         //wybrana karta
-        System.out.println("czy karta poprawna?");
         if (isCorrectCard(playerChoice, player.getCards(),player)) {
             Card chosenCard = player.getCards().get(playerChoice - 1);
             gameBoard.putCardOnStack(chosenCard, player);
-            gameBoard.useCardAbility(chosenCard, player.getId());
+            //gameBoard.useCardAbility(chosenCard, player.getId());
+            System.out.println("Gracz " + player.getId() + " wykłada " + chosenCard);
             return true;
         } else {
-            System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
+            //System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
         }
         return false;
     }
@@ -161,7 +162,6 @@ public class GameController {
     }
 
     private int checkComputerChoice(List<Card> validCards, Player computer) {
-        System.out.println("computer valid cards: " + validCards);
         if(validCards.isEmpty()){
             return 0;
         }
@@ -169,15 +169,11 @@ public class GameController {
         return new Random().nextInt(computer.getCards().size())+1;
     }
 
-    private void drawCard(Player computer) {
-        System.out.println("Gracz " + computer.getId() + " ciągnie nową kartę");
-        computer.giveCard(gameBoard.getBoardDeck().poll());
-    }
 
 
     private boolean isCorrectCard(int choice, List<Card> playerCards, Player player) {
         Card stackCard = gameBoard.getStack().getLast();
-        if (choice == 0 || choice >= playerCards.size()) {
+        if (choice == 0 || choice > playerCards.size()) {
             return false;
         }
         Card chosenCard = player.getCards().get(choice - 1);
@@ -199,4 +195,3 @@ public class GameController {
 
 
 }
-

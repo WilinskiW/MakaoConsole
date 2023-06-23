@@ -89,7 +89,7 @@ public class GameBoard {
             case "J" -> System.out.println("Demand");
             case "AS" -> System.out.println("Change suit");
             case "K" -> System.out.println("King Exception");
-            default -> System.out.println("The rest of the cards");
+            //default -> System.out.println("The rest of the cards");
         }
     }
 
