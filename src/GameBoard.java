@@ -27,14 +27,14 @@ public class GameBoard {
         List<Player> players = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            players.add(new Player(i + 1, new ArrayList<>()));
+            players.add(new Player(i, new ArrayList<>()));
         }
         this.players = players;
     }
 
     public void givePlayersStartingCards() {
         for (Player player : players) {
-            for(int i = 0 ; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
             }
         }
@@ -85,11 +85,11 @@ public class GameBoard {
         switch (cardNameRank) {
             case "TWO" -> plusTwo(currentPlayerId);
             case "THREE" -> plusThree(currentPlayerId);
-            case "FOUR" -> wait(currentPlayerId);
+            //case "FOUR" -> wait(currentPlayerId);
             case "J" -> System.out.println("Demand");
             case "AS" -> System.out.println("Change suit");
             case "K" -> System.out.println("King Exception");
-            //default -> System.out.println("The rest of the cards");
+            default -> System.out.println("The rest of the cards");
         }
     }
 
@@ -99,41 +99,37 @@ public class GameBoard {
             players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
             players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
             System.out.println("+2");
-        }
-        else {
+        } else {
             players.get(0).giveCard(boardDeck.poll());
             players.get(0).giveCard(boardDeck.poll());
             System.out.println("+2");
         }
     }
 
-    public void plusThree(int currentPlayerId){
+    public void plusThree(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
             players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
             players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
             players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-
-            System.out.println(players.get(currentPlayerId + 1).getCards());
-        }
-        else {
+            System.out.println("+3");
+        } else {
             players.get(0).giveCard(boardDeck.poll());
             players.get(0).giveCard(boardDeck.poll());
             players.get(0).giveCard(boardDeck.poll());
 
-            System.out.println(players.get(0).getCards());
+            System.out.println("+3");
         }
 
     }
 
     //todo Do ulepszenia 
 
-    public void wait(int currentPlayerId){
+    public void wait(int currentPlayerId) {
         int lastIndex = players.size() - 1;
-        if(lastIndex != currentPlayerId) {
+        if (lastIndex != currentPlayerId) {
             players.get(currentPlayerId + 1).setSkipTurnActive(true);
-        }
-        else {
+        } else {
             players.get(0).setSkipTurnActive(true);
         }
     }

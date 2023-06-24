@@ -62,13 +62,13 @@ public class GameController {
     }
 
     private void executeSkipTurnSpecial(Player player) {
-        System.out.println("Gracz " + player.getId() + " czeka");
+        System.out.println("Gracz " + (player.getId()+1) + " czeka");
         player.setSkipTurnActive(false);
         gameBoard.checkBoardDeckStatus();
     }
 
     private void showTurnOptions(Player player) {
-        System.out.println("///// Tura Gracza " + player.getId() + " /////");
+        System.out.println("///// Tura Gracza " + (player.getId()+1) + " /////");
         System.out.println("Karta na stosie: " + gameBoard.getStack().getLast());
         System.out.println("0. Dobierz kartę");
         for (int i = 0; i < player.getCards().size(); i++) {
@@ -85,15 +85,15 @@ public class GameController {
     private boolean executeTurn(int playerChoice, Player player) { //boolean - czy tura zakończona
         if (playerChoice == 0) { //dobiera
             player.giveCard(gameBoard.getBoardDeck().poll());
-            System.out.println("Gracz dobiera");
+            System.out.println("Gracz " + (player.getId()+1) + " dobiera");
             return true;
         }
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(),player)) {
             Card chosenCard = player.getCards().get(playerChoice - 1);
             gameBoard.putCardOnStack(chosenCard, player);
-            //gameBoard.useCardAbility(chosenCard, player.getId());
-            System.out.println("Gracz " + player.getId() + " wykłada " + chosenCard);
+            gameBoard.useCardAbility(chosenCard, player.getId());
+            System.out.println("Gracz " + (player.getId()+1) + " wykłada " + chosenCard);
             return true;
         } else {
             //System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
@@ -145,9 +145,9 @@ public class GameController {
 
 
     private void showComputerInformation(Card stackCard, Player computer, int amountOfCards) {
-        System.out.println("///// Tura Gracza " + computer.getId() + " /////");
+        System.out.println("///// Tura Gracza " + (computer.getId()+1) + " /////");
         System.out.println("Karta na wierzchu stosu: " + stackCard);
-        System.out.println("Gracz " + computer.getId() + " ma " + amountOfCards + " kart");
+        System.out.println("Gracz " + (computer.getId()+1) + " ma " + amountOfCards + " kart");
     }
 
     private List<Card> findValidCards(int amountOfCards, Player player, Card stackCard) {
@@ -186,7 +186,7 @@ public class GameController {
     private boolean isVictoryAchieve() {
         for (Player player : gameBoard.getPlayers()) {
             if (player.isWinner()) {
-                System.out.println("Wygrywa Gracz " + player.getId());
+                System.out.println("Wygrywa Gracz " + (player.getId()+1));
                 return true;
             }
         }
