@@ -93,37 +93,30 @@ public class GameBoard {
         }
     }
 
-    public void plusTwo(int currentPlayerId) {
+    private void plusTwo(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-            System.out.println("+2");
+            giveNextPlayerCards(currentPlayerId + 1,2);
         } else {
-            players.get(0).giveCard(boardDeck.poll());
-            players.get(0).giveCard(boardDeck.poll());
-            System.out.println("+2");
+            giveNextPlayerCards(0,2);
         }
     }
 
-    public void plusThree(int currentPlayerId) {
+    private void giveNextPlayerCards(int nextPlayerIndex, int amountOfCards) {
+        for (int i = 0; i < amountOfCards; i++) {
+            players.get(nextPlayerIndex).giveCard(boardDeck.poll());
+        }
+    }
+
+    private void plusThree(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-            players.get(currentPlayerId + 1).giveCard(boardDeck.poll());
-            System.out.println("+3");
+            giveNextPlayerCards(currentPlayerId + 1,3);
         } else {
-            players.get(0).giveCard(boardDeck.poll());
-            players.get(0).giveCard(boardDeck.poll());
-            players.get(0).giveCard(boardDeck.poll());
-
-            System.out.println("+3");
+            giveNextPlayerCards(0,3);
         }
 
     }
-
-    //todo Do ulepszenia 
 
     public void wait(int currentPlayerId) {
         int lastIndex = players.size() - 1;
@@ -156,5 +149,5 @@ public class GameBoard {
                 '}';
     }
 
-    //
+
 }
