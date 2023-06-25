@@ -85,11 +85,10 @@ public class GameBoard {
         switch (cardNameRank) {
             case "TWO" -> plusTwo(currentPlayerId);
             case "THREE" -> plusThree(currentPlayerId);
-            //case "FOUR" -> wait(currentPlayerId);
-            case "J" -> System.out.println("Demand");
-            case "AS" -> System.out.println("Change suit");
-            case "K" -> System.out.println("King Exception");
-            default -> System.out.println("The rest of the cards");
+            case "FOUR" -> wait(currentPlayerId);
+            //case "J" -> System.out.println("Demand");
+            //case "AS" -> System.out.println("Change suit");
+            //case "K" -> System.out.println("King Exception");
         }
     }
 

@@ -62,6 +62,7 @@ public class GameController {
     }
 
     private void executeSkipTurnSpecial(Player player) {
+        System.out.println("///// Tura Gracza " + (player.getId()+1) + " /////");
         System.out.println("Gracz " + (player.getId()+1) + " czeka");
         player.setSkipTurnActive(false);
         gameBoard.checkBoardDeckStatus();
@@ -121,6 +122,7 @@ public class GameController {
 
         if (computer.isSkipTurnActive()) {
             executeSkipTurnSpecial(computer);
+            return computer.isWinner();
         }
         showComputerInformation(stackCard, computer, amountOfCards);
 
@@ -173,6 +175,11 @@ public class GameController {
 
     private boolean isCorrectCard(int choice, List<Card> playerCards, Player player) {
         Card stackCard = gameBoard.getStack().getLast();
+
+        if(stackCard.getRank().name().equals("Q")){
+            return true;
+        }
+
         if (choice == 0 || choice > playerCards.size()) {
             return false;
         }
