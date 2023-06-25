@@ -79,20 +79,20 @@ public class GameBoard {
         }
     }
 
-    public void useCardAbility(Card card, int currentPlayerId) {
-        String cardNameRank = card.getRank().name();
+    public void useCardAbility(Card chosenCard, int currentPlayerId) {
+        String cardNameRank = chosenCard.getRank().name();
 
         switch (cardNameRank) {
-            case "TWO" -> plusTwo(currentPlayerId);
-            case "THREE" -> plusThree(currentPlayerId);
-            case "FOUR" -> wait(currentPlayerId);
-            //case "J" -> System.out.println("Demand");
             //case "AS" -> System.out.println("Change suit");
-            //case "K" -> System.out.println("King Exception");
+            case "TWO" -> useTwoAbility(currentPlayerId);
+            case "THREE" -> useThreeAbility(currentPlayerId);
+            case "FOUR" -> useFourAbility(currentPlayerId);
+            //case "J" -> System.out.println("Demand");
+            case "K" -> useKingAbility(currentPlayerId, chosenCard);
         }
     }
 
-    private void plusTwo(int currentPlayerId) {
+    private void useTwoAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
             giveNextPlayerCards(currentPlayerId + 1,2);
@@ -107,7 +107,7 @@ public class GameBoard {
         }
     }
 
-    private void plusThree(int currentPlayerId) {
+    private void useThreeAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
             giveNextPlayerCards(currentPlayerId + 1,3);
@@ -117,12 +117,39 @@ public class GameBoard {
 
     }
 
-    public void wait(int currentPlayerId) {
+    private void useFourAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (lastIndex != currentPlayerId) {
             players.get(currentPlayerId + 1).setSkipTurnActive(true);
         } else {
             players.get(0).setSkipTurnActive(true);
+        }
+    }
+
+    private void useKingAbility(int currentPlayerId, Card chosenCard){
+        int lastIndex = players.size() - 1;
+        String cardSuits = chosenCard.getSuit().name();
+
+        switch (cardSuits){
+            case "KIER" -> useHeartKing(currentPlayerId, lastIndex);
+            case "PIK" -> useSpadeKing(currentPlayerId, lastIndex);
+        }
+
+    }
+
+    private void useHeartKing(int currentPlayerId, int lastIndex){
+        if (currentPlayerId != lastIndex) {
+            giveNextPlayerCards(currentPlayerId + 1,5);
+        } else {
+            giveNextPlayerCards(0,5);
+        }
+    }
+
+    private void useSpadeKing(int currentPlayerId, int lastIndex){
+        if (currentPlayerId != 0) {
+            giveNextPlayerCards(currentPlayerId - 1,5);
+        } else {
+            giveNextPlayerCards(lastIndex,5);
         }
     }
 
