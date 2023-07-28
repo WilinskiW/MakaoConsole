@@ -1,10 +1,13 @@
 public class Card {
-    private final Rank rank;
-    private final Suits suit;
+    private Rank rank;
+    private Suits suit;
 
     public Card(Rank rank, Suits suit) {
         this.rank = rank;
         this.suit = suit;
+    }
+
+    public Card() {
     }
 
     public Rank getRank() {
@@ -13,6 +16,14 @@ public class Card {
 
     public Suits getSuit() {
         return suit;
+    }
+
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
+
+    public void setSuit(Suits suit) {
+        this.suit = suit;
     }
 
     @Override

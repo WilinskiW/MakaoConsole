@@ -14,7 +14,7 @@ public class GameController {
         gameBoard.putStartingCardOnStack();
         System.out.println(gameBoard);
         System.out.println("Rozegraj turę");
-        playTurn(amountOfPlayers);
+        playGame(amountOfPlayers);
         System.out.println(gameBoard);
     }
 
@@ -23,15 +23,15 @@ public class GameController {
         int amountOfPlayers;
 
         do {
-            System.out.println("Podaj ilość graczy (min.2, max.5)");
+            System.out.println("Podaj ilość graczy (min.2, max.4)");
             amountOfPlayers = scanner.nextInt();
         }
-        while (amountOfPlayers < 2 || amountOfPlayers > 5);
+        while (amountOfPlayers < 2 || amountOfPlayers > 4);
 
         return amountOfPlayers;
     }
 
-    private void playTurn(int players) {
+    private void playGame(int players) {
         do {
             boolean humanWon = humanTurn();
             if (humanWon) {
@@ -53,6 +53,7 @@ public class GameController {
         boolean turnEnded;
         do {
             int playerChoice = checkHumanChoice(amountOfCards);
+
             turnEnded = executeTurn(playerChoice, human);
         }
         while (!turnEnded);
@@ -97,14 +98,22 @@ public class GameController {
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(), player)) {
             Card chosenCard = player.getCards().get(playerChoice - 1);
+
+
+            if (chosenCard.getRank().needsDecision()) {
+                Card card = player.getDecisionMaker().decide(chosenCard.getRank());
+                System.out.println(card);
+            }
             gameBoard.putCardOnStack(chosenCard, player);
             gameBoard.useCardAbility(chosenCard, player.getId());
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
             return true;
-        } else {
-            //System.out.println("Nie możesz położyć tej karty! Kolor kart lub stopień musi się zgadzać! Jeżeli nie możesz wyłożyć karty, dobierz kartę! ");
         }
         return false;
+    }
+
+    private void executeJackAbilityTurn() {
+
     }
 
     private void endTurnUpdate(Player player) {
@@ -203,6 +212,15 @@ public class GameController {
         }
         return false;
     }
-
-
 }
+
+
+
+/*
+ * Jopek - ranga z ograniczonej puli 5-10  // 5
+ * Jocker - dowolna karta  //5 pik
+ * As - kolor (0-3) // pik
+ *
+ *
+ *
+ * */

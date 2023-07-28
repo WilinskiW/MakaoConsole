@@ -25,9 +25,9 @@ public class GameBoard {
 
     public void preparPlayers(int count) {
         List<Player> players = new ArrayList<>();
-
-        for (int i = 0; i < count; i++) {
-            players.add(new Player(i, new ArrayList<>()));
+        players.add(new HumanPlayer(0));
+        for (int i = 1; i < count; i++) {
+            players.add(new ComputerPlayer(i));
         }
         this.players = players;
     }
@@ -83,13 +83,17 @@ public class GameBoard {
         String cardNameRank = chosenCard.getRank().name();
 
         switch (cardNameRank) {
-            //case "AS" -> System.out.println("Change suit");
+            case "AS" -> useAceAbility(currentPlayerId);
             case "TWO" -> useTwoAbility(currentPlayerId);
             case "THREE" -> useThreeAbility(currentPlayerId);
             case "FOUR" -> useFourAbility(currentPlayerId);
             //case "J" -> System.out.println("Demand");
             case "K" -> useKingAbility(currentPlayerId, chosenCard);
         }
+    }
+
+    private void useAceAbility(int currentPlayerId){
+        
     }
 
     private void useTwoAbility(int currentPlayerId) {
@@ -124,6 +128,10 @@ public class GameBoard {
         } else {
             players.get(0).setSkipTurnActive(true);
         }
+    }
+
+    private void useJackAbility(int currentPlayerId){
+
     }
 
     private void useKingAbility(int currentPlayerId, Card chosenCard){

@@ -1,16 +1,18 @@
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public abstract class Player {
     private final int id;
-    private final List<Card> cards;
+    private final List<Card> cards = new ArrayList<>();
     private boolean isWinner = false;
     private boolean skipTurnActive = false;
 
-    public Player(int id, List<Card> cards) {
+    public Player(int id) {
         this.id = id;
-        this.cards = cards;
     }
+
+    public abstract SpecialDecisionMaker getDecisionMaker();
 
     public void giveCard(Card card) {
         cards.add(card);

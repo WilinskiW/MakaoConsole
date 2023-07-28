@@ -8,4 +8,25 @@ public enum Rank {
         this.ability = ability;
     }
 
+    public boolean needsDecision(){
+        return this == J || this == AS;
+    }
+
+    public static Rank giveNumericRank(int dana) {
+
+        return switch (dana) {
+            case 6 -> SIX;
+            case 7 -> SEVEN;
+            case 8 -> EIGHT;
+            case 9 -> NINE;
+            case 10 -> TEN;
+            default -> null;
+        };
+
+      /*  if (dana < 6 || dana > 10) {
+            return null;
+        }
+       return values()[dana-1];*/
+    }
+
 }
