@@ -13,13 +13,16 @@ public class GameBoard {
     private Queue<Card> createBoardDeck() {
         LinkedList<Card> deck = new LinkedList<>();
 
+
         for (Rank rank : Rank.values()) {
             for (Suits suit : Suits.values()) {
                 deck.add(new Card(rank, suit));
             }
         }
+
+
         Collections.shuffle(deck);
-        return deck;
+        return new LinkedList<>(deck.subList(0,21));
     }
 
 
@@ -52,7 +55,7 @@ public class GameBoard {
         return card1.getSuit() == card2.getSuit() || card1.getRank() == card2.getRank();
     }
 
-    public void putCardOnStack(Card card, Player user) {
+    public void addCardToStack(Card card, Player user) {
         addCardToStack(card);
         user.removeCard(card);
     }
@@ -63,37 +66,48 @@ public class GameBoard {
         }
     }
 
+    // TODO: 03.08.2023 Do poprawy refreshBoardDeck 
     private void refreshBoardDeck() {
         LinkedList<Card> newDeck = new LinkedList<>();
 
-        for (int cardIndex = 0; cardIndex < stack.size() - 1; cardIndex++) {
-            newDeck.add(stack.getFirst());
-        }
+        System.out.println("Wstawiam...");
+        System.out.println(boardDeck.size());
 
+        int startingSize = stack.size() - 1;
+
+        for (int cardIndex = 0; cardIndex < startingSize; cardIndex++) {
+
+            Card card = stack.pollFirst();
+            System.out.println(card);
+            newDeck.add(card);
+        }
+        System.out.println("Koniec");
         this.boardDeck = newDeck;
     }
 
     public void checkBoardDeckStatus() {
-        if (boardDeck.size() == 1) {
+        if (boardDeck.size() < 1) {
             refreshBoardDeck();
         }
     }
 
-    public void useCardAbility(Card chosenCard, int currentPlayerId) {
+    public void useCardAbility(Card chosenCard, int currentPlayerId, Card decision) {
         String cardNameRank = chosenCard.getRank().name();
 
         switch (cardNameRank) {
-            case "AS" -> useAceAbility(currentPlayerId);
+            case "AS" -> useAceAbility(decision);
             case "TWO" -> useTwoAbility(currentPlayerId);
             case "THREE" -> useThreeAbility(currentPlayerId);
             case "FOUR" -> useFourAbility(currentPlayerId);
-            //case "J" -> System.out.println("Demand");
+            case "J" -> System.out.println("Demand");
             case "K" -> useKingAbility(currentPlayerId, chosenCard);
         }
     }
 
-    private void useAceAbility(int currentPlayerId){
-        
+    private void useAceAbility(Card decision){
+        Card card = new Card(Rank.AS, decision.getSuit());
+        card.setTemp(true);
+        addCardToStack(card);
     }
 
     private void useTwoAbility(int currentPlayerId) {

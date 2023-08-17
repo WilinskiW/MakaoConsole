@@ -1,6 +1,7 @@
 public class Card {
     private Rank rank;
     private Suits suit;
+    private boolean temp = false;
 
     public Card(Rank rank, Suits suit) {
         this.rank = rank;
@@ -9,6 +10,7 @@ public class Card {
 
     public Card() {
     }
+
 
     public Rank getRank() {
         return rank;
@@ -24,6 +26,10 @@ public class Card {
 
     public void setSuit(Suits suit) {
         this.suit = suit;
+    }
+
+    public void setTemp(boolean temp) {
+        this.temp = temp;
     }
 
     @Override

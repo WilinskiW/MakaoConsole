@@ -15,6 +15,7 @@ public enum Rank {
     public static Rank giveNumericRank(int dana) {
 
         return switch (dana) {
+            case 5 -> FIVE;
             case 6 -> SIX;
             case 7 -> SEVEN;
             case 8 -> EIGHT;

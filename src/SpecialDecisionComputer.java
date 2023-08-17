@@ -7,6 +7,6 @@ public Player player;
 
     @Override
     public Card decide(Rank rank) {
-        return null;
+        return new Card();
     }
 }

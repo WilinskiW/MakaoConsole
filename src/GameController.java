@@ -99,13 +99,13 @@ public class GameController {
         if (isCorrectCard(playerChoice, player.getCards(), player)) {
             Card chosenCard = player.getCards().get(playerChoice - 1);
 
-
+            Card decision = new Card();
             if (chosenCard.getRank().needsDecision()) {
-                Card card = player.getDecisionMaker().decide(chosenCard.getRank());
-                System.out.println(card);
+                decision = player.getDecisionMaker().decide(chosenCard.getRank());
+                System.out.println(decision);
             }
-            gameBoard.putCardOnStack(chosenCard, player);
-            gameBoard.useCardAbility(chosenCard, player.getId());
+            gameBoard.addCardToStack(chosenCard, player);
+            gameBoard.useCardAbility(chosenCard, player.getId(), decision);
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
             return true;
         }

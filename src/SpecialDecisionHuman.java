@@ -11,7 +11,11 @@ public class SpecialDecisionHuman implements SpecialDecisionMaker {
         }
 
         String dana = scanner.nextLine();
-        return createCard(dana);
+        Card card = createCard(dana);
+        if(card.getRank() == null && card.getSuit() == null){
+            return decide(rank);
+        }
+        return card;
     }
 
     private Card createCard(String dana){

@@ -1,12 +1,12 @@
 public enum Suits {
-    KIER, DIAMOND, TREFL, PIK;
+    KIER, KARO, TREFL, PIK;
 
     public static Suits giveSuit(String dana) {
         String danaUpper = dana.toUpperCase();
 
         return switch (danaUpper) {
             case "KIER" -> KIER;
-            case "KARO" -> DIAMOND;
+            case "KARO" -> KARO;
             case "TREFL" -> TREFL;
             case "PIK" -> PIK;
             default -> null;
