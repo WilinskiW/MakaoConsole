@@ -1,6 +1,5 @@
-import java.util.List;
 
-public class ComputerPlayer extends Player{
+public class ComputerPlayer extends Player {
     public ComputerPlayer(int id) {
         super(id);
     }

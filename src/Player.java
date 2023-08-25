@@ -7,6 +7,8 @@ public abstract class Player {
     private final List<Card> cards = new ArrayList<>();
     private boolean isWinner = false;
     private boolean skipTurnActive = false;
+    private boolean demanding = false;
+    private boolean demanded = false;
 
     public Player(int id) {
         this.id = id;
@@ -30,6 +32,13 @@ public abstract class Player {
         this.skipTurnActive = skipTurnActive;
     }
 
+    public void setDemanding(boolean demanding) {
+        this.demanding = demanding;
+    }
+
+    public void setDemanded(boolean demanded) {
+        this.demanded = demanded;
+    }
     public boolean isWinner() {
         return isWinner;
     }
@@ -40,6 +49,14 @@ public abstract class Player {
 
     public boolean isSkipTurnActive() {
         return skipTurnActive;
+    }
+
+    public boolean isDemanding() {
+        return demanding;
+    }
+
+    public boolean isDemanded() {
+        return demanded;
     }
 
     public List<Card> getCards() {

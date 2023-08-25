@@ -49,15 +49,21 @@ public class GameController {
             executeSkipTurnSpecial(human);
             return human.isWinner();
         }
-        showTurnOptions(human);
-        boolean turnEnded;
-        do {
-            int playerChoice = checkHumanChoice(amountOfCards);
 
-            turnEnded = executeTurn(playerChoice, human);
+        if (human.isDemanded() || human.isDemanding()) {
+            executeJackAbilityTurn(human, gameBoard.getStack().getLast());
+            gameBoard.checkBoardDeckStatus();
+        } else {
+            showTurnOptions(human);
+            boolean turnEnded;
+            do {
+                int playerChoice = checkHumanChoice(amountOfCards);
+
+                turnEnded = executeTurn(playerChoice, human);
+            }
+            while (!turnEnded);
+            endTurnUpdate(human);
         }
-        while (!turnEnded);
-        endTurnUpdate(human);
 
         return human.isWinner();
     }
@@ -68,6 +74,25 @@ public class GameController {
         player.setSkipTurnActive(false);
         gameBoard.checkBoardDeckStatus();
     }
+
+    private void executeJackAbilityTurn(Player player, Card chosenCard) {
+        Rank demandedRank = chosenCard.getRank();
+
+        for(Card card : player.getCards()){
+            if(card.getRank().equals(demandedRank)){
+                gameBoard.addCardToStack(card);
+                System.out.println("***** Gracz " + (player.getId() + 1) + " wykłada " + demandedRank + " *****");
+                player.setDemanded(false);
+                player.setDemanding(false);
+                return;
+            }
+        }
+        player.giveCard(gameBoard.getBoardDeck().poll());
+        player.setDemanding(false);
+        player.setDemanded(false);
+        System.out.println("***** Gracz " + (player.getId() + 1) + " dobiera kartę *****");
+    }
+
 
     private void showTurnOptions(Player player) {
         System.out.println("///// Tura Gracza " + (player.getId() + 1) + " /////");
@@ -96,24 +121,24 @@ public class GameController {
             return true;
         }
         //wybrana karta
-        if (isCorrectCard(playerChoice, player.getCards(), player)) {
+        if (isCorrectCard(playerChoice, player.getCards(), player)) { // Czy karta może został położona
             Card chosenCard = player.getCards().get(playerChoice - 1);
 
-            Card decision = new Card();
-            if (chosenCard.getRank().needsDecision()) {
-                decision = player.getDecisionMaker().decide(chosenCard.getRank());
-                System.out.println(decision);
+            Card decisionCard = new Card();
+            if (chosenCard.getRank().needsDecision()) { //Czy karta to J lub AS
+                decisionCard = player.getDecisionMaker().decide(chosenCard.getRank()); //Utwórz karte
             }
             gameBoard.addCardToStack(chosenCard, player);
-            gameBoard.useCardAbility(chosenCard, player.getId(), decision);
+            gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
+
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
+            System.out.println(gameBoard.getStack());
+            if(player.isDemanding()){
+                System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
+            }
             return true;
         }
         return false;
-    }
-
-    private void executeJackAbilityTurn() {
-
     }
 
     private void endTurnUpdate(Player player) {
@@ -138,18 +163,25 @@ public class GameController {
             executeSkipTurnSpecial(computer);
             return computer.isWinner();
         }
-        showComputerInformation(stackCard, computer, amountOfCards);
 
-        List<Card> validCards = findValidCards(amountOfCards, computer, stackCard);
-        boolean turnEnded;
+        if (computer.isDemanded() || computer.isDemanding()) {
+            executeJackAbilityTurn(computer, gameBoard.getStack().getLast());
+            gameBoard.checkBoardDeckStatus();
+        } else {
+            showComputerInformation(stackCard, computer, amountOfCards);
 
-        do {
-            int playerChoice = checkComputerChoice(validCards, computer);
-            turnEnded = executeTurn(playerChoice, computer);
+
+            List<Card> validCards = findValidCards(amountOfCards, computer, stackCard);
+            boolean turnEnded;
+
+            do {
+                int playerChoice = checkComputerChoice(validCards, computer);
+                turnEnded = executeTurn(playerChoice, computer);
+            }
+            while (!turnEnded);
+
+            endTurnUpdate(computer);
         }
-        while (!turnEnded);
-
-        endTurnUpdate(computer);
 
         return computer.isWinner();
     }
@@ -188,15 +220,15 @@ public class GameController {
 
     private boolean isCorrectCard(int choice, List<Card> playerCards, Player player) {
         Card stackCard = gameBoard.getStack().getLast();
+        Card chosenCard = player.getCards().get(choice - 1);
 
-        if (stackCard.getRank().name().equals("Q")) {
+        if (stackCard.getRank().name().equals("Q") || chosenCard.getRank().name().equals("Q")) {
             return true;
         }
 
         if (choice == 0 || choice > playerCards.size()) {
             return false;
         }
-        Card chosenCard = player.getCards().get(choice - 1);
 
         return gameBoard.compareCards(chosenCard, stackCard);
     }
@@ -218,7 +250,7 @@ public class GameController {
 
 /*
  * Jopek - ranga z ograniczonej puli 5-10  // 5
- * Jocker - dowolna karta  //5 pik
+ * Joker - dowolna karta  //5 pik
  * As - kolor (0-3) // pik
  *
  *

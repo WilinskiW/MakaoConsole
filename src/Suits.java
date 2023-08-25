@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public enum Suits {
     KIER, KARO, TREFL, PIK;
 
@@ -16,6 +18,12 @@ public enum Suits {
                 return value;
             }
         }*/
+    }
+
+    public static String giveRandomSuit(){
+        Random random = new Random();
+        Suits [] suits = values();
+        return suits[random.nextInt(suits.length)].name();
     }
 
     /*

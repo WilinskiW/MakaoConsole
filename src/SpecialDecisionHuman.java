@@ -11,22 +11,9 @@ public class SpecialDecisionHuman implements SpecialDecisionMaker {
         }
 
         String dana = scanner.nextLine();
-        Card card = createCard(dana);
+        Card card = createTempCard(dana);
         if(card.getRank() == null && card.getSuit() == null){
             return decide(rank);
-        }
-        return card;
-    }
-
-    private Card createCard(String dana){
-        Card card = new Card();
-        if(Character.isDigit(dana.charAt(0))){
-            Rank rank = Rank.giveNumericRank(Integer.parseInt(dana));
-            card.setRank(rank);
-        }
-        else {
-            Suits suit = Suits.giveSuit(dana);
-            card.setSuit(suit);
         }
         return card;
     }

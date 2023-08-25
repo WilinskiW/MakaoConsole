@@ -20,6 +20,10 @@ public class Card {
         return suit;
     }
 
+    public boolean isTemp() {
+        return temp;
+    }
+
     public void setRank(Rank rank) {
         this.rank = rank;
     }

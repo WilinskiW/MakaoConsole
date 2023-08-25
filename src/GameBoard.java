@@ -22,7 +22,7 @@ public class GameBoard {
 
 
         Collections.shuffle(deck);
-        return new LinkedList<>(deck.subList(0,21));
+        return deck;
     }
 
 
@@ -66,23 +66,20 @@ public class GameBoard {
         }
     }
 
-    // TODO: 03.08.2023 Do poprawy refreshBoardDeck 
     private void refreshBoardDeck() {
         LinkedList<Card> newDeck = new LinkedList<>();
-
-        System.out.println("Wstawiam...");
-        System.out.println(boardDeck.size());
 
         int startingSize = stack.size() - 1;
 
         for (int cardIndex = 0; cardIndex < startingSize; cardIndex++) {
-
             Card card = stack.pollFirst();
             System.out.println(card);
-            newDeck.add(card);
+            if(!card.isTemp()) {
+                newDeck.add(card);
+            }
         }
-        System.out.println("Koniec");
         this.boardDeck = newDeck;
+        System.out.println(boardDeck);
     }
 
     public void checkBoardDeckStatus() {
@@ -99,7 +96,7 @@ public class GameBoard {
             case "TWO" -> useTwoAbility(currentPlayerId);
             case "THREE" -> useThreeAbility(currentPlayerId);
             case "FOUR" -> useFourAbility(currentPlayerId);
-            case "J" -> System.out.println("Demand");
+            case "J" -> useJackAbility(currentPlayerId,decision);
             case "K" -> useKingAbility(currentPlayerId, chosenCard);
         }
     }
@@ -144,9 +141,19 @@ public class GameBoard {
         }
     }
 
-    private void useJackAbility(int currentPlayerId){
+    private void useJackAbility(int currentPlayerId, Card decision){
+        Card card = new Card(decision.getRank(), Suits.KIER);
+        card.setTemp(true);
+        addCardToStack(card);
 
+        players.get(currentPlayerId).setDemanding(true);
+        for (Player player : players) {
+            if (player != players.get(currentPlayerId)) {
+                player.setDemanded(true);
+            }
+        }
     }
+
 
     private void useKingAbility(int currentPlayerId, Card chosenCard){
         int lastIndex = players.size() - 1;

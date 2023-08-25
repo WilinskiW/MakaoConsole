@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public enum Rank {
     AS(Ability.CHANGE_SUIT), TWO(Ability.PLUS_2), THREE(Ability.PLUS_3), FOUR(Ability.WAIT),
     FIVE(null), SIX(null), SEVEN(null), EIGHT(null), NINE(null), TEN(null),
@@ -12,7 +14,7 @@ public enum Rank {
         return this == J || this == AS;
     }
 
-    public static Rank giveNumericRank(int dana) {
+    public static Rank specifyRankInWords(int dana) {
 
         return switch (dana) {
             case 5 -> FIVE;
@@ -28,6 +30,30 @@ public enum Rank {
             return null;
         }
        return values()[dana-1];*/
+    }
+
+    public static String specifyRankNumerically(Rank rank){
+        return switch (rank){
+            case FIVE -> "5";
+            case SIX -> "6";
+            case SEVEN -> "7";
+            case EIGHT -> "8";
+            case NINE -> "9";
+            case TEN -> "10";
+            default -> null;
+        };
+    }
+
+    public static Rank chooseRandomNonFunctionalRank(){
+        Random random = new Random();
+        return specifyRankInWords(random.nextInt(10-5)+5);
+    }
+
+    public static boolean isCardNonFunctional(Rank rank){
+        return switch (rank) {
+            case FIVE, SIX, SEVEN, EIGHT, NINE, TEN -> true;
+            default -> false;
+        };
     }
 
 }
