@@ -10,7 +10,7 @@ public Player player;
         this.player = player;
     }
     @Override
-    public Card decide(Rank rank) {
+    public Card decide(Rank rank, Card stackCard) {
         String dana = "";
 
         switch (rank){
@@ -18,9 +18,9 @@ public Player player;
             case AS -> dana = chooseSuit();
         }
 
-        Card card = createTempCard(dana);
+        Card card = createTempCard(dana, rank, stackCard);
         if(card.getRank() == null && card.getSuit() == null){
-            return decide(rank);
+            return decide(rank, stackCard);
         }
         return card;
     }

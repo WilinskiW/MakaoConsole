@@ -123,18 +123,18 @@ public class GameController {
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(), player)) { // Czy karta może został położona
             Card chosenCard = player.getCards().get(playerChoice - 1);
+            Card stackCard = gameBoard.getStack().getLast();
 
             Card decisionCard = new Card();
-            if (chosenCard.getRank().needsDecision()) { //Czy karta to J lub AS
-                decisionCard = player.getDecisionMaker().decide(chosenCard.getRank()); //Utwórz karte
+            if (chosenCard.getRank().needsDecision()) { //Czy karta to J lub AS lub Joker
+                decisionCard = player.getDecisionMaker().decide(chosenCard.getRank(), stackCard); //Utwórz karte
             }
             gameBoard.addCardToStack(chosenCard, player);
             gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
-            System.out.println(gameBoard.getStack());
             if(player.isDemanding()){
-                System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
+                System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + stackCard.getRank() + " *****");
             }
             return true;
         }
@@ -222,7 +222,7 @@ public class GameController {
         Card stackCard = gameBoard.getStack().getLast();
         Card chosenCard = player.getCards().get(choice - 1);
 
-        if (stackCard.getRank().name().equals("Q") || chosenCard.getRank().name().equals("Q")) {
+        if (stackCard.getRank().name().equals("Q") || chosenCard.getRank().name().equals("Q") || chosenCard.getRank().name().equals("JOKER")) {
             return true;
         }
 

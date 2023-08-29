@@ -15,11 +15,15 @@ public class GameBoard {
 
 
         for (Rank rank : Rank.values()) {
+            if(rank.equals(Rank.JOKER)){
+                continue;
+            }
             for (Suits suit : Suits.values()) {
                 deck.add(new Card(rank, suit));
             }
         }
-
+        deck.add(new Card(Rank.JOKER));
+        deck.add(new Card(Rank.JOKER));
 
         Collections.shuffle(deck);
         return deck;
@@ -36,6 +40,7 @@ public class GameBoard {
     }
 
     public void givePlayersStartingCards() {
+        players.get(0).giveCard(new Card(Rank.JOKER));
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
@@ -98,6 +103,7 @@ public class GameBoard {
             case "FOUR" -> useFourAbility(currentPlayerId);
             case "J" -> useJackAbility(currentPlayerId,decision);
             case "K" -> useKingAbility(currentPlayerId, chosenCard);
+            case "JOKER" -> useJokerAbility(currentPlayerId,decision);
         }
     }
 
@@ -180,6 +186,14 @@ public class GameBoard {
         } else {
             giveNextPlayerCards(lastIndex,5);
         }
+    }
+
+    private void useJokerAbility(int currentPlayerId, Card decision){
+        Card card = new Card(decision.getRank(), decision.getSuit());
+        card.setTemp(true);
+        addCardToStack(card);
+
+        useCardAbility(card,currentPlayerId,decision);
     }
 
     public Queue<Card> getBoardDeck() {

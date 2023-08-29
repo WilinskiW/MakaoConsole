@@ -8,6 +8,10 @@ public class Card {
         this.suit = suit;
     }
 
+    public Card(Rank rank) {
+        this.rank = rank;
+    }
+
     public Card() {
     }
 
@@ -38,6 +42,11 @@ public class Card {
 
     @Override
     public String toString() {
-        return rank + " " + suit;
+        if(!rank.name().equals("JOKER")) {
+            return rank + " " + suit;
+        }
+        else {
+            return rank + "";
+        }
     }
 }

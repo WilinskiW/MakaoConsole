@@ -3,7 +3,7 @@ import java.util.Random;
 public enum Rank {
     AS(Ability.CHANGE_SUIT), TWO(Ability.PLUS_2), THREE(Ability.PLUS_3), FOUR(Ability.WAIT),
     FIVE(null), SIX(null), SEVEN(null), EIGHT(null), NINE(null), TEN(null),
-    Q(Ability.ON_EVERYTHING), J(Ability.DEMAND), K(Ability.KING_EXCEPTION);
+    Q(Ability.ON_EVERYTHING), J(Ability.DEMAND), K(Ability.KING_EXCEPTION), JOKER(Ability.WILD_CARD);
     public final Ability ability;
 
     Rank(Ability ability) {
@@ -11,7 +11,7 @@ public enum Rank {
     }
 
     public boolean needsDecision(){
-        return this == J || this == AS;
+        return this == J || this == AS || this == JOKER;
     }
 
     public static Rank specifyRankInWords(int dana) {
@@ -30,6 +30,25 @@ public enum Rank {
             return null;
         }
        return values()[dana-1];*/
+    }
+
+    public static Rank specifyRankInWords(String dana){
+        return switch (dana) {
+            case "AS"  -> AS;
+            case "2" -> TWO;
+            case "3" -> THREE;
+            case "4" -> FOUR;
+            case "5" -> FIVE;
+            case "6" -> SIX;
+            case "7" -> SEVEN;
+            case "8" -> EIGHT;
+            case "9" -> NINE;
+            case "10" -> TEN;
+            case "Q" -> Q;
+            case "J" -> J;
+            case "K" -> K;
+            default -> null;
+        };
     }
 
     public static String specifyRankNumerically(Rank rank){
