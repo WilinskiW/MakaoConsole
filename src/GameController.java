@@ -123,18 +123,17 @@ public class GameController {
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(), player)) { // Czy karta może został położona
             Card chosenCard = player.getCards().get(playerChoice - 1);
-            Card stackCard = gameBoard.getStack().getLast();
 
             Card decisionCard = new Card();
             if (chosenCard.getRank().needsDecision()) { //Czy karta to J lub AS lub Joker
-                decisionCard = player.getDecisionMaker().decide(chosenCard.getRank(), stackCard); //Utwórz karte
+                decisionCard = player.getDecisionMaker().decide(chosenCard.getRank(), gameBoard.getStack().getLast()); //Utwórz karte
             }
             gameBoard.addCardToStack(chosenCard, player);
             gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
             if(player.isDemanding()){
-                System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + stackCard.getRank() + " *****");
+                System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
             }
             return true;
         }
@@ -147,7 +146,7 @@ public class GameController {
     }
 
     private void computerTurns(int players) {
-        for (int id = 2; id <= players; id++) { //tury komputera
+        for (int id = 2; id <= players; id++) {
             if (computerTurn(id)) {
                 break;
             }
@@ -232,8 +231,6 @@ public class GameController {
 
         return gameBoard.compareCards(chosenCard, stackCard);
     }
-//todo dodać warunek do Jokera i samego Jokera
-
 
     private boolean isVictoryAchieve() {
         for (Player player : gameBoard.getPlayers()) {
@@ -245,14 +242,3 @@ public class GameController {
         return false;
     }
 }
-
-
-
-/*
- * Jopek - ranga z ograniczonej puli 5-10  // 5
- * Joker - dowolna karta  //5 pik
- * As - kolor (0-3) // pik
- *
- *
- *
- * */

@@ -7,7 +7,7 @@ public interface SpecialDecisionMaker {
     default Card createTempCard(String dana, Rank chosenCardRank, Card stackCard) {
         Card card = new Card();
 
-        if (chosenCardRank == Rank.JOKER) {
+        if (chosenCardRank.name().equals("JOKER")) {
            return createJokerCard(dana,stackCard);
         }
 
@@ -23,7 +23,8 @@ public interface SpecialDecisionMaker {
 
     private Card createJokerCard(String dana, Card stackCard) {
         Card card = new Card();
-        String[] splitDana = dana.split(" ", 1);
+        String[] splitDana = dana.split(" ", 2);
+
         if (splitDana.length == 1) {
             if (Rank.specifyRankInWords(dana) != null) {
                 Rank rank = Rank.specifyRankInWords(dana);
@@ -34,8 +35,10 @@ public interface SpecialDecisionMaker {
                 card.setSuit(suit);
                 card.setRank(stackCard.getRank());
             }
+            return card;
+        }
 
-        } else {
+        if(stackCard.getRank() == Rank.Q){
             Rank rank = Rank.specifyRankInWords(splitDana[0]);
             card.setRank(rank);
             Suits suit = Suits.giveSuit(splitDana[1]);

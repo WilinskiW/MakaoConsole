@@ -15,7 +15,7 @@ public class GameBoard {
 
 
         for (Rank rank : Rank.values()) {
-            if(rank.equals(Rank.JOKER)){
+            if (rank.equals(Rank.JOKER)) {
                 continue;
             }
             for (Suits suit : Suits.values()) {
@@ -79,7 +79,7 @@ public class GameBoard {
         for (int cardIndex = 0; cardIndex < startingSize; cardIndex++) {
             Card card = stack.pollFirst();
             System.out.println(card);
-            if(!card.isTemp()) {
+            if (!card.isTemp()) {
                 newDeck.add(card);
             }
         }
@@ -101,13 +101,13 @@ public class GameBoard {
             case "TWO" -> useTwoAbility(currentPlayerId);
             case "THREE" -> useThreeAbility(currentPlayerId);
             case "FOUR" -> useFourAbility(currentPlayerId);
-            case "J" -> useJackAbility(currentPlayerId,decision);
+            case "J" -> useJackAbility(currentPlayerId, decision);
             case "K" -> useKingAbility(currentPlayerId, chosenCard);
-            case "JOKER" -> useJokerAbility(currentPlayerId,decision);
+            case "JOKER" -> useJokerAbility(currentPlayerId, decision);
         }
     }
 
-    private void useAceAbility(Card decision){
+    private void useAceAbility(Card decision) {
         Card card = new Card(Rank.AS, decision.getSuit());
         card.setTemp(true);
         addCardToStack(card);
@@ -116,9 +116,9 @@ public class GameBoard {
     private void useTwoAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1,2);
+            giveNextPlayerCards(currentPlayerId + 1, 2);
         } else {
-            giveNextPlayerCards(0,2);
+            giveNextPlayerCards(0, 2);
         }
     }
 
@@ -131,9 +131,9 @@ public class GameBoard {
     private void useThreeAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1,3);
+            giveNextPlayerCards(currentPlayerId + 1, 3);
         } else {
-            giveNextPlayerCards(0,3);
+            giveNextPlayerCards(0, 3);
         }
 
     }
@@ -147,8 +147,8 @@ public class GameBoard {
         }
     }
 
-    private void useJackAbility(int currentPlayerId, Card decision){
-        Card card = new Card(decision.getRank(), Suits.KIER);
+    private void useJackAbility(int currentPlayerId, Card decision) {
+        Card card = new Card(decision.getRank(), Suits.giveSuit(Suits.giveRandomSuit()));
         card.setTemp(true);
         addCardToStack(card);
 
@@ -161,39 +161,46 @@ public class GameBoard {
     }
 
 
-    private void useKingAbility(int currentPlayerId, Card chosenCard){
+    private void useKingAbility(int currentPlayerId, Card chosenCard) {
         int lastIndex = players.size() - 1;
         String cardSuits = chosenCard.getSuit().name();
 
-        switch (cardSuits){
+        switch (cardSuits) {
             case "KIER" -> useHeartKing(currentPlayerId, lastIndex);
             case "PIK" -> useSpadeKing(currentPlayerId, lastIndex);
         }
 
     }
 
-    private void useHeartKing(int currentPlayerId, int lastIndex){
+    private void useHeartKing(int currentPlayerId, int lastIndex) {
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1,5);
+            giveNextPlayerCards(currentPlayerId + 1, 5);
         } else {
-            giveNextPlayerCards(0,5);
+            giveNextPlayerCards(0, 5);
         }
     }
 
-    private void useSpadeKing(int currentPlayerId, int lastIndex){
+    private void useSpadeKing(int currentPlayerId, int lastIndex) {
         if (currentPlayerId != 0) {
-            giveNextPlayerCards(currentPlayerId - 1,5);
+            giveNextPlayerCards(currentPlayerId - 1, 5);
         } else {
-            giveNextPlayerCards(lastIndex,5);
+            giveNextPlayerCards(lastIndex, 5);
         }
     }
 
-    private void useJokerAbility(int currentPlayerId, Card decision){
+    private void useJokerAbility(int currentPlayerId, Card decision) {
         Card card = new Card(decision.getRank(), decision.getSuit());
         card.setTemp(true);
         addCardToStack(card);
 
-        useCardAbility(card,currentPlayerId,decision);
+        if(!decision.getRank().equals(Rank.J)) {
+            useCardAbility(card, currentPlayerId, decision);
+        }
+        else {
+            Card cardJ = players.get(currentPlayerId).getDecisionMaker().decide(decision.getRank(), stack.getLast());
+            useCardAbility(card, currentPlayerId, cardJ);
+        }
+
     }
 
     public Queue<Card> getBoardDeck() {

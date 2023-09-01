@@ -24,7 +24,7 @@ public class SpecialDecisionHuman implements SpecialDecisionMaker {
                     + "Rangi: AS, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K ; Kolor: Kier, Karo, Pik, Trefl";
         }
         else {
-            return "Podaj rangę i kolor w formacie ( RANK SUIT)";
+            return "Podaj rangę i kolor w formacie (RANK SUIT)";
         }
     }
 

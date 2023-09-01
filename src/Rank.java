@@ -63,6 +63,25 @@ public enum Rank {
         };
     }
 
+    public static String chooseRankForJoker(){
+        Random random = new Random();
+        return switch (random.nextInt(4)+1){
+            case 1,2,3 -> chooseRandomAttackingRank();
+            case 4 -> chooseRandomNonFunctionalRank().name();
+            default -> null;
+        };
+    }
+
+    public static String chooseRandomAttackingRank(){
+        Random random = new Random();
+        return switch (random.nextInt(3)+1){
+            case 1 -> "2";
+            case 2 -> "3";
+            case 3 -> "K";
+            default -> null;
+        };
+    }
+
     public static Rank chooseRandomNonFunctionalRank(){
         Random random = new Random();
         return specifyRankInWords(random.nextInt(10-5)+5);

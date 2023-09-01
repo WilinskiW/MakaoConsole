@@ -20,10 +20,19 @@ public enum Suits {
         }*/
     }
 
-    public static String giveRandomSuit(){
+    public static String giveRandomSuit() {
         Random random = new Random();
-        Suits [] suits = values();
+        Suits[] suits = values();
         return suits[random.nextInt(suits.length)].name();
+    }
+
+    public static String giveAttackingKing() {
+        String randomSuit = giveRandomSuit();
+        if (randomSuit.equals("KIER") || randomSuit.equals("PIK")) {
+            return randomSuit;
+        } else {
+            return giveAttackingKing();
+        }
     }
 
     /*
