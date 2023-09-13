@@ -4,27 +4,19 @@ public class GameController {
     private final GameBoard gameBoard = new GameBoard();
 
     public void start() {
-        System.out.println("Zaczyna się gra");
         int amountOfPlayers = decideHowManyPlayers();
         gameBoard.preparPlayers(amountOfPlayers);
-        System.out.println("Przygotowano " + amountOfPlayers + " graczy");
-        System.out.println("Rozdano każdemu po 5 kart");
         gameBoard.givePlayersStartingCards();
-        System.out.println("Położono pierwszą kartą na stos");
         gameBoard.putStartingCardOnStack();
-        System.out.println(gameBoard);
-        System.out.println("Rozegraj turę");
         playGame(amountOfPlayers);
-        System.out.println(gameBoard);
     }
 
     private int decideHowManyPlayers() {
-        Scanner scanner = new Scanner(System.in);
         int amountOfPlayers;
 
         do {
             System.out.println("Podaj ilość graczy (min.2, max.4)");
-            amountOfPlayers = scanner.nextInt();
+            amountOfPlayers = readNumber();
         }
         while (amountOfPlayers < 2 || amountOfPlayers > 4);
 
@@ -43,43 +35,26 @@ public class GameController {
 
     private boolean humanTurn() {
         Player human = gameBoard.getPlayers().get(0);
+        Card stackCard = gameBoard.getStack().getLast();
 
-        int amountOfCards = human.getCards().size();
-        if (human.isSkipTurnActive()) {
-            executeSkipTurnSpecial(human);
-            return human.isWinner();
-        }
-
-        if (human.isDemanded() || human.isDemanding()) {
-            executeJackAbilityTurn(human, gameBoard.getStack().getLast());
-            gameBoard.checkBoardDeckStatus();
+        if (human.isAttacked()) {
+            executeHumanDefenseTurn(human, stackCard);
+        } else if (human.isDemanded() || human.isDemanding()) {
+            executeJackAbilityTurn(human, stackCard);
         } else {
-            showTurnOptions(human);
-            boolean turnEnded;
-            do {
-                int playerChoice = checkHumanChoice(amountOfCards);
-
-                turnEnded = executeTurn(playerChoice, human);
-            }
-            while (!turnEnded);
-            endTurnUpdate(human);
+            executeHumanNormalTurn(human);
         }
+        gameBoard.checkBoardDeckStatus();
 
         return human.isWinner();
     }
 
-    private void executeSkipTurnSpecial(Player player) {
-        System.out.println("///// Tura Gracza " + (player.getId() + 1) + " /////");
-        System.out.println("Gracz " + (player.getId() + 1) + " czeka");
-        player.setSkipTurnActive(false);
-        gameBoard.checkBoardDeckStatus();
-    }
 
     private void executeJackAbilityTurn(Player player, Card chosenCard) {
         Rank demandedRank = chosenCard.getRank();
 
-        for(Card card : player.getCards()){
-            if(card.getRank().equals(demandedRank)){
+        for (Card card : player.getCards()) {
+            if (card.getRank().equals(demandedRank)) {
                 gameBoard.addCardToStack(card);
                 System.out.println("***** Gracz " + (player.getId() + 1) + " wykłada " + demandedRank + " *****");
                 player.setDemanded(false);
@@ -93,32 +68,75 @@ public class GameController {
         System.out.println("***** Gracz " + (player.getId() + 1) + " dobiera kartę *****");
     }
 
+    private void executeHumanDefenseTurn(Player human, Card stackCard) {
+        DefenseController defenseController = new DefenseController();
+        System.out.println("!!!!! Gracz " + (human.getId() + 1) + " jest atakowany. Karta atakująca to:  " + stackCard + " !!!!!");
+        List<Card> defenseCards = defenseController.humanDefenseOption(human, stackCard);
+        boolean turnEnded;
+        do {
+            int defenseChoice = checkHumanChoice(defenseCards.size());
+            int playerChoice = 0;
+            if (defenseChoice != 0) {
+                playerChoice = defenseController.findDefenseCardIndexInPlayerDeck(defenseCards.get(defenseChoice - 1), human);
+                playerChoice++;
+            }
+            turnEnded = executeTurn(playerChoice, human);
+        }
+        while (!turnEnded);
+        human.setAttacked(false);
+        endTurnUpdate(human);
+    }
 
-    private void showTurnOptions(Player player) {
-        System.out.println("///// Tura Gracza " + (player.getId() + 1) + " /////");
+
+    private void executeHumanNormalTurn(Player human) {
+        showTurnOptions(human);
+        boolean turnEnded;
+        do {
+            int playerChoice = checkHumanChoice(human.getCards().size());
+
+            turnEnded = executeTurn(playerChoice, human);
+        }
+        while (!turnEnded);
+        endTurnUpdate(human);
+    }
+
+
+    private void showTurnOptions(Player human) {
+        System.out.println("///// Tura Gracza " + (human.getId() + 1) + " /////");
         System.out.println("Karta na stosie: " + gameBoard.getStack().getLast());
         System.out.println("0. Dobierz kartę");
-        for (int i = 0; i < player.getCards().size(); i++) {
-            System.out.println(i + 1 + ". " + player.getCards().get(i));
+        for (int i = 0; i < human.getCards().size(); i++) {
+            System.out.println(i + 1 + ". " + human.getCards().get(i));
         }
     }
 
     private int checkHumanChoice(int amountOfCards) {
-        Scanner scanner = new Scanner(System.in);
         int humanChoice;
         do {
             System.out.println("Podaj liczbę od 0 do " + amountOfCards);
-            humanChoice = scanner.nextInt();
+            humanChoice = readNumber();
         }
         while (humanChoice < 0 || humanChoice > amountOfCards);
         return humanChoice;
     }
 
+
+    private int readNumber() {
+        int number;
+        try {
+            Scanner scanner = new Scanner(System.in);
+            number = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Należy podać liczbę");
+            number = readNumber();
+        }
+
+        return number;
+    }
+
     private boolean executeTurn(int playerChoice, Player player) { //boolean - czy tura zakończona
         if (playerChoice == 0) { //dobiera
-            player.giveCard(gameBoard.getBoardDeck().poll());
-            System.out.println("Gracz " + (player.getId() + 1) + " dobiera");
-            return true;
+            return executeNeutralOption(player);
         }
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(), player)) { // Czy karta może został położona
@@ -132,13 +150,45 @@ public class GameController {
             gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
             System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
-            if(player.isDemanding()){
+            if (player.isDemanding()) {
                 System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
             }
             return true;
         }
         return false;
     }
+
+//    private boolean tryRescueAction(Player player) {
+//        Card rescueCard = gameBoard.getBoardDeck().peek();
+//        player.giveCard(rescueCard);
+//        System.out.println("Gracz " + (player.getId() + 1) + " ratuję się " + rescueCard);
+//        return true;
+//
+//    }
+//
+//
+//    private boolean isRescueCardCorrect(){
+//        Card stackCard = gameBoard.getStack().getLast();
+//        Card rescueCard = gameBoard.getBoardDeck().peek();
+//        assert rescueCard != null;
+//
+//    }
+
+    private boolean executeNeutralOption(Player player) {
+        if (gameBoard.getStack().getLast().getRank() == Rank.FOUR) {
+            System.out.println("Gracz " + (player.getId() + 1) + " czeka");
+            player.setSkipTurnActive(false);
+        } else {
+            System.out.println("Gracz " + (player.getId() + 1) + " dobiera");
+            if (!gameBoard.getPullDeck().isEmpty()) {
+                gameBoard.givePlayerPullDeck(player);
+            } else {
+                player.giveCard(gameBoard.getBoardDeck().poll());
+            }
+        }
+        return true;
+    }
+
 
     private void endTurnUpdate(Player player) {
         gameBoard.setVictoryStatus(player);
@@ -155,34 +205,55 @@ public class GameController {
 
     private boolean computerTurn(int id) {
         Player computer = gameBoard.getPlayers().get(id - 1);
-        int amountOfCards = computer.getCards().size();
         Card stackCard = gameBoard.getStack().getLast();
 
-        if (computer.isSkipTurnActive()) {
-            executeSkipTurnSpecial(computer);
-            return computer.isWinner();
-        }
-
-        if (computer.isDemanded() || computer.isDemanding()) {
-            executeJackAbilityTurn(computer, gameBoard.getStack().getLast());
-            gameBoard.checkBoardDeckStatus();
+        if (computer.isAttacked()) {
+            executeComputerDefenseTurn(computer, stackCard);
+        } else if (computer.isDemanded() || computer.isDemanding()) {
+            executeJackAbilityTurn(computer, stackCard);
         } else {
-            showComputerInformation(stackCard, computer, amountOfCards);
-
-
-            List<Card> validCards = findValidCards(amountOfCards, computer, stackCard);
-            boolean turnEnded;
-
-            do {
-                int playerChoice = checkComputerChoice(validCards, computer);
-                turnEnded = executeTurn(playerChoice, computer);
-            }
-            while (!turnEnded);
-
-            endTurnUpdate(computer);
+            executeComputerNormanlTurn(computer);
         }
+        gameBoard.checkBoardDeckStatus();
 
         return computer.isWinner();
+    }
+
+    private void executeComputerDefenseTurn(Player computer, Card stackCard) {
+        DefenseController defenseController = new DefenseController();
+        System.out.println("!!!!! Gracz " + (computer.getId() + 1) + " jest atakowany. Karta atakująca to:  " + stackCard + " !!!!!");
+        List<Card> defenseCards = defenseController.computerDefenseOption(computer, stackCard);
+        if(!defenseCards.isEmpty()){
+            System.out.println();
+        }
+        boolean turnEnded;
+        do {
+            int defenseChoice = checkComputerChoice(defenseCards,computer);
+            int computerChoice = 0;
+            if (defenseChoice != 0) {
+                computerChoice = defenseController.findDefenseCardIndexInPlayerDeck(defenseCards.get(defenseChoice - 1), computer);
+                computerChoice++;
+            }
+            turnEnded = executeTurn(computerChoice, computer);
+        }
+        while (!turnEnded);
+        computer.setAttacked(false);
+        endTurnUpdate(computer);
+    }
+
+    private void executeComputerNormanlTurn(Player computer) {
+        showComputerInformation(gameBoard.getStack().getLast(), computer, computer.getAmountsOfCards());
+
+        List<Card> validCards = findValidCards(computer.getAmountsOfCards(), computer, gameBoard.getStack().getLast());
+        boolean turnEnded;
+
+        do {
+            int playerChoice = checkComputerChoice(validCards, computer);
+            turnEnded = executeTurn(playerChoice, computer);
+        }
+        while (!turnEnded);
+
+        endTurnUpdate(computer);
     }
 
     //generowanie valid kart
@@ -208,12 +279,17 @@ public class GameController {
         return validCards;
     }
 
-    private int checkComputerChoice(List<Card> validCards, Player computer) {
+    private int checkComputerChoice(List<Card> validCards,Player computer) {
         if (validCards.isEmpty()) {
             return 0;
         }
 
-        return new Random().nextInt(computer.getCards().size()) + 1;
+        if(computer.isAttacked()){
+            return new Random().nextInt(validCards.size()) + 1;
+        }
+        else {
+            return new Random().nextInt(computer.getCards().size()) + 1;
+        }
     }
 
 

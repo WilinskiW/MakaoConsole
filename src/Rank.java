@@ -25,11 +25,6 @@ public enum Rank {
             case 10 -> TEN;
             default -> null;
         };
-
-      /*  if (dana < 6 || dana > 10) {
-            return null;
-        }
-       return values()[dana-1];*/
     }
 
     public static Rank specifyRankInWords(String dana){
@@ -74,10 +69,11 @@ public enum Rank {
 
     public static String chooseRandomAttackingRank(){
         Random random = new Random();
-        return switch (random.nextInt(3)+1){
+        return switch (random.nextInt(4)+1){
             case 1 -> "2";
             case 2 -> "3";
-            case 3 -> "K";
+            case 3 -> "4";
+            case 4 -> "K";
             default -> null;
         };
     }

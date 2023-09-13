@@ -9,6 +9,7 @@ public abstract class Player {
     private boolean skipTurnActive = false;
     private boolean demanding = false;
     private boolean demanded = false;
+    private boolean attacked = false;
 
     public Player(int id) {
         this.id = id;
@@ -57,6 +58,18 @@ public abstract class Player {
 
     public boolean isDemanded() {
         return demanded;
+    }
+
+    public boolean isAttacked() {
+        return attacked;
+    }
+
+    public void setAttacked(boolean attacked) {
+        this.attacked = attacked;
+    }
+
+    public int getAmountsOfCards(){
+        return cards.size();
     }
 
     public List<Card> getCards() {

@@ -1,5 +1,3 @@
-import java.nio.charset.CoderResult;
-import java.util.Arrays;
 
 public interface SpecialDecisionMaker {
     Card decide(Rank rank, Card stackCard);

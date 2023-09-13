@@ -4,6 +4,7 @@ public class GameBoard {
     private Queue<Card> boardDeck;
     private List<Player> players;
     private final Deque<Card> stack = new LinkedList<>();
+    private final Deque<Card> pullDeck = new LinkedList<>();
 
     public GameBoard() {
         boardDeck = createBoardDeck();
@@ -40,7 +41,7 @@ public class GameBoard {
     }
 
     public void givePlayersStartingCards() {
-        players.get(0).giveCard(new Card(Rank.JOKER));
+        players.get(1).giveCard(new Card(Rank.JOKER));
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
@@ -49,7 +50,11 @@ public class GameBoard {
     }
 
     public void putStartingCardOnStack() {
-        stack.add(boardDeck.poll());
+        for (Card card : boardDeck) {
+            if (Rank.isCardNonFunctional(card.getRank())) {
+                addCardToStack(card);
+            }
+        }
     }
 
     public void addCardToStack(Card card) {
@@ -116,24 +121,32 @@ public class GameBoard {
     private void useTwoAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1, 2);
+            addCardsToPullDeck(2);
+            setAttackingStatusToNextPlayer(currentPlayerId + 1);
         } else {
-            giveNextPlayerCards(0, 2);
+            addCardsToPullDeck(2);
+            setAttackingStatusToNextPlayer(0);
         }
     }
 
-    private void giveNextPlayerCards(int nextPlayerIndex, int amountOfCards) {
+    private void addCardsToPullDeck(int amountOfCards) {
         for (int i = 0; i < amountOfCards; i++) {
-            players.get(nextPlayerIndex).giveCard(boardDeck.poll());
+            pullDeck.add(boardDeck.poll());
         }
+    }
+
+    private void setAttackingStatusToNextPlayer(int nextPlayerIndex) {
+        players.get(nextPlayerIndex).setAttacked(true);
     }
 
     private void useThreeAbility(int currentPlayerId) {
         int lastIndex = players.size() - 1;
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1, 3);
+            addCardsToPullDeck(3);
+            setAttackingStatusToNextPlayer(currentPlayerId + 1);
         } else {
-            giveNextPlayerCards(0, 3);
+            addCardsToPullDeck(3);
+            setAttackingStatusToNextPlayer(0);
         }
 
     }
@@ -142,8 +155,10 @@ public class GameBoard {
         int lastIndex = players.size() - 1;
         if (lastIndex != currentPlayerId) {
             players.get(currentPlayerId + 1).setSkipTurnActive(true);
+            setAttackingStatusToNextPlayer(currentPlayerId + 1);
         } else {
             players.get(0).setSkipTurnActive(true);
+            setAttackingStatusToNextPlayer(0);
         }
     }
 
@@ -174,17 +189,21 @@ public class GameBoard {
 
     private void useHeartKing(int currentPlayerId, int lastIndex) {
         if (currentPlayerId != lastIndex) {
-            giveNextPlayerCards(currentPlayerId + 1, 5);
+            addCardsToPullDeck(5);
+            setAttackingStatusToNextPlayer(currentPlayerId + 1);
         } else {
-            giveNextPlayerCards(0, 5);
+            addCardsToPullDeck(5);
+            setAttackingStatusToNextPlayer(0);
         }
     }
 
     private void useSpadeKing(int currentPlayerId, int lastIndex) {
         if (currentPlayerId != 0) {
-            giveNextPlayerCards(currentPlayerId - 1, 5);
+            addCardsToPullDeck(5);
+            setAttackingStatusToNextPlayer(currentPlayerId - 1);
         } else {
-            giveNextPlayerCards(lastIndex, 5);
+            addCardsToPullDeck(5);
+            setAttackingStatusToNextPlayer(lastIndex);
         }
     }
 
@@ -193,14 +212,19 @@ public class GameBoard {
         card.setTemp(true);
         addCardToStack(card);
 
-        if(!decision.getRank().equals(Rank.J)) {
+        if (!decision.getRank().equals(Rank.J)) {
             useCardAbility(card, currentPlayerId, decision);
-        }
-        else {
+        } else {
             Card cardJ = players.get(currentPlayerId).getDecisionMaker().decide(decision.getRank(), stack.getLast());
             useCardAbility(card, currentPlayerId, cardJ);
         }
+    }
 
+    public void givePlayerPullDeck(Player player) {
+        for (Card card : pullDeck) {
+            player.giveCard(card);
+        }
+        pullDeck.clear();
     }
 
     public Queue<Card> getBoardDeck() {
@@ -215,6 +239,9 @@ public class GameBoard {
         return players;
     }
 
+    public Deque<Card> getPullDeck() {
+        return pullDeck;
+    }
 
     @Override
     public String toString() {
@@ -222,6 +249,7 @@ public class GameBoard {
                 "boardDeck=" + boardDeck + " " + boardDeck.size() +
                 ", players=" + players +
                 ", stack=" + stack +
+                ", pullDeck=" + pullDeck +
                 '}';
     }
 
