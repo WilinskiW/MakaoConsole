@@ -53,7 +53,7 @@ public class DefenseController {
         return defenseCards;
     }
 
-    private boolean isCardCanBeDefense(Card card, Card stackCard) {
+    public boolean isCardCanBeDefense(Card card, Card stackCard) {
         if (card.getRank() == stackCard.getRank()) {
             return true;
         } else if (card.getRank().equals(Rank.THREE) && card.getSuit() == stackCard.getSuit()) {
@@ -71,4 +71,5 @@ public class DefenseController {
         }
         return -1;
     }
+
 }
