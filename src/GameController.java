@@ -153,6 +153,11 @@ public class GameController {
             gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
             showChosenCardAction(player,chosenCard,decisionCard);
+
+            if(player.getCards().size() == 1){
+                System.out.println("Gracz " + (player.getId() + 1) + " ma MAKAO!!!");
+            }
+
             if (player.isDemanding()) {
                 System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
             }
@@ -316,7 +321,7 @@ public class GameController {
     private boolean isVictoryAchieve() {
         for (Player player : gameBoard.getPlayers()) {
             if (player.isWinner()) {
-                System.out.println("Wygrywa Gracz " + (player.getId() + 1));
+                System.out.println("I po Makale. Wygrywa Gracz " + (player.getId() + 1));
                 return true;
             }
         }
