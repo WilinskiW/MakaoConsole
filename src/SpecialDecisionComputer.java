@@ -49,16 +49,25 @@ public class SpecialDecisionComputer implements SpecialDecisionMaker {
     }
 
     private String giveInformationAboutTheCard(Card stackCard) {
-        String rankName = Rank.chooseRankForJoker();
+        String rankName;
+        do {
+            rankName = Rank.chooseRankForJoker();
+        }
+        while (isChosenRankIncorrect(rankName,stackCard));
+
         if (stackCard.getRank() == Rank.Q) {
             if (rankName.equals("K")) {
                 return rankName + " " + Suits.giveAttackingKing();
-            }
-            else {
+            } else {
                 return rankName + " " + Suits.giveRandomSuit();
             }
         }
         return rankName;
     }
 
+    private boolean isChosenRankIncorrect(String rankName, Card stackCard) {
+        return player.isAttacked() &&
+                rankName.equals("K") &&
+                (stackCard.getRank() == Rank.TWO || stackCard.getRank() == Rank.THREE || stackCard.getRank() == Rank.FOUR);
+    }
 }

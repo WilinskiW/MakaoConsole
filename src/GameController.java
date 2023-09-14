@@ -84,6 +84,9 @@ public class GameController {
         }
         while (!turnEnded);
         human.setAttacked(false);
+        //
+        System.out.println(human.getCards());
+        //
         endTurnUpdate(human);
     }
 
@@ -149,7 +152,7 @@ public class GameController {
             gameBoard.addCardToStack(chosenCard, player);
             gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
-            System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
+            showChosenCardAction(player,chosenCard,decisionCard);
             if (player.isDemanding()) {
                 System.out.println("***** Gracz " + (player.getId() + 1) + " żąda " + gameBoard.getStack().getLast().getRank() + " *****");
             }
@@ -187,6 +190,15 @@ public class GameController {
             }
         }
         return true;
+    }
+
+    private void showChosenCardAction(Player player, Card chosenCard,Card decisionCard){
+        if(chosenCard.getRank() == Rank.AS) {
+            System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard + ". Zmienia kolor na " + decisionCard.getSuit());
+        }
+        else {
+            System.out.println("Gracz " + (player.getId() + 1) + " wykłada " + chosenCard);
+        }
     }
 
 
@@ -252,15 +264,8 @@ public class GameController {
             turnEnded = executeTurn(playerChoice, computer);
         }
         while (!turnEnded);
-
         endTurnUpdate(computer);
     }
-
-    //generowanie valid kart
-    //numer <- player wybiera kartę lub dobieranie
-    //numer ->  karta jest zagrana lub dobrana
-    //powtarzanie wyboru jeśli niepoprany
-
 
     private void showComputerInformation(Card stackCard, Player computer, int amountOfCards) {
         System.out.println("///// Tura Gracza " + (computer.getId() + 1) + " /////");
