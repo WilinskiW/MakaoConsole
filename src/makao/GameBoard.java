@@ -54,6 +54,7 @@ public class GameBoard {
         for (Card card : boardDeck) {
             if (Rank.isCardNonFunctional(card.getRank())) {
                 addCardToStack(card);
+                break;
             }
         }
     }

@@ -19,7 +19,7 @@ public class GameController {
         int amountOfPlayers;
 
         do {
-            System.out.println("Podaj ilość graczy (min." + MIN_PLAYERS +", max.4)");
+            System.out.println("Podaj ilość graczy (min." + MIN_PLAYERS + ", max.4)");
             amountOfPlayers = readNumber();
         }
         while (amountOfPlayers < MIN_PLAYERS || amountOfPlayers > 4);
@@ -34,7 +34,7 @@ public class GameController {
                 continue;
             }
             computerTurns(players);
-        } while (!isVictoryAchieve());
+        } while (!isVictoryAchieved()); //hasAnyoneWon
     }
 
     private boolean humanTurn() {
@@ -69,8 +69,7 @@ public class GameController {
 
         if (isRescueCardCorrect(player)) {
             executeRescueCardAction(player);
-        }
-        else {
+        } else {
             player.giveCard(gameBoard.getBoardDeck().poll());
             System.out.println("***** Gracz " + (player.getId() + 1) + " dobiera kartę *****");
         }
@@ -150,7 +149,7 @@ public class GameController {
         }
         //wybrana karta
         if (isCorrectCard(playerChoice, player.getCards(), player)) { // Czy karta może został położona
-            useCard(playerChoice,player);
+            useCard(playerChoice, player);
             return true;
         }
         return false;
@@ -159,7 +158,7 @@ public class GameController {
     private boolean executeNeutralOption(Player player) {
 
         if (isRescueCardCorrect(player)) {
-           return executeRescueCardAction(player);
+            return executeRescueCardAction(player);
         }
 
         if (gameBoard.getStack().getLast().getRank() == Rank.FOUR) {
@@ -182,20 +181,16 @@ public class GameController {
         Card rescueCard = gameBoard.getBoardDeck().peek();
         assert rescueCard != null;
 
-        if(!player.isDemanded() && !player.isDemanding()) {
+        if (!player.isDemanded() && !player.isDemanding()) {
             //Joker
             if (rescueCard.getRank().equals(Rank.JOKER)) {
                 return true;
-            }
-            //2-4, król pik, krol kier
-            else if (defenseController.isCardCanBeDefense(rescueCard, stackCard)) {
+            } else if (defenseController.isCardCanBeDefense(rescueCard, stackCard)) {    //2-4, król pik, krol kier
                 return true;
+            } else {      //AS,5-10, król Trefl, król karo, Q
+                return gameBoard.compareCards(stackCard, rescueCard) || stackCard.getRank().equals(Rank.Q) || rescueCard.getRank().equals(Rank.Q);
             }
-            //AS,5-10, król Trefl, król karo, Q
-            else return gameBoard.compareCards(stackCard, rescueCard) || stackCard.getRank().equals(Rank.Q) || rescueCard.getRank().equals(Rank.Q);
-        }
-        else {
-            //J
+        } else {    //J
             return Rank.isCardNonFunctional(stackCard.getRank()) && rescueCard.getRank().equals(stackCard.getRank());
         }
     }
@@ -204,12 +199,12 @@ public class GameController {
         Card rescueCard = gameBoard.getBoardDeck().poll();
         player.giveCard(rescueCard);
         System.out.println("Gracz " + (player.getId() + 1) + " ratuję się " + rescueCard);
-        useCard(player.getCards().size(),player);
+        useCard(player.getCards().size(), player);
         return true;
     }
 
 
-    private void useCard(int playerChoice,Player player){
+    private void useCard(int playerChoice, Player player) {
         Card chosenCard = player.getCards().get(playerChoice - 1);
 
         Card decisionCard = new Card();
@@ -224,22 +219,20 @@ public class GameController {
         showChosenCardAction(player, chosenCard, decisionCard);
     }
 
-    private void useSpadeKingIfNeeded(Player player){
+    private void useSpadeKingIfNeeded(Player player) {
         Card stackCard = gameBoard.getStack().getLast();
-        if(stackCard.getRank() == Rank.K && stackCard.getSuit() == Suits.PIK){
-            executeSpadeKingTurn(player.getId(),gameBoard.getPlayers(),stackCard);
+        if (stackCard.getRank() == Rank.K && stackCard.getSuit() == Suits.PIK) {
+            executeSpadeKingTurn(player.getId(), gameBoard.getPlayers(), stackCard);
         }
     }
 
-    private void executeSpadeKingTurn(int currentPlayerId, List<Player> players,Card stackCard){
-        if(currentPlayerId == 0){
-            executeComputerDefenseTurn(players.get(players.size()-1),stackCard);
-        }
-        else if(currentPlayerId == 1){
-            executeHumanDefenseTurn(players.get(0),stackCard);
-        }
-        else {
-            executeComputerDefenseTurn(players.get(currentPlayerId - 1),stackCard);
+    private void executeSpadeKingTurn(int currentPlayerId, List<Player> players, Card stackCard) {
+        if (currentPlayerId == 0) {
+            executeComputerDefenseTurn(players.get(players.size() - 1), stackCard);
+        } else if (currentPlayerId == 1) {
+            executeHumanDefenseTurn(players.get(0), stackCard);
+        } else {
+            executeComputerDefenseTurn(players.get(currentPlayerId - 1), stackCard);
         }
     }
 
@@ -370,7 +363,7 @@ public class GameController {
         return gameBoard.compareCards(chosenCard, stackCard);
     }
 
-    private boolean isVictoryAchieve() {
+    private boolean isVictoryAchieved() {
         for (Player player : gameBoard.getPlayers()) {
             if (player.isWinner()) {
                 System.out.println("I po Makale. Wygrywa Gracz " + (player.getId() + 1));
