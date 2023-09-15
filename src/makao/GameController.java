@@ -1,12 +1,15 @@
+package makao;
+
 import java.util.*;
 
 public class GameController {
     private final GameBoard gameBoard = new GameBoard();
     private final DefenseController defenseController = new DefenseController();
+    private static final int MIN_PLAYERS = 2;
 
     public void start() {
         int amountOfPlayers = decideHowManyPlayers();
-        gameBoard.preparPlayers(amountOfPlayers);
+        gameBoard.preparePlayers(amountOfPlayers);
         gameBoard.givePlayersStartingCards();
         gameBoard.putStartingCardOnStack();
         playGame(amountOfPlayers);
@@ -16,10 +19,10 @@ public class GameController {
         int amountOfPlayers;
 
         do {
-            System.out.println("Podaj ilość graczy (min.2, max.4)");
+            System.out.println("Podaj ilość graczy (min." + MIN_PLAYERS +", max.4)");
             amountOfPlayers = readNumber();
         }
-        while (amountOfPlayers < 2 || amountOfPlayers > 4);
+        while (amountOfPlayers < MIN_PLAYERS || amountOfPlayers > 4);
 
         return amountOfPlayers;
     }
@@ -91,9 +94,6 @@ public class GameController {
         }
         while (!turnEnded);
         human.setAttacked(false);
-        //
-        System.out.println(human.getCards());
-        //
         endTurnUpdate(human);
     }
 
@@ -219,7 +219,28 @@ public class GameController {
         gameBoard.addCardToStack(chosenCard, player);
         gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
+        useSpadeKingIfNeeded(player);
+
         showChosenCardAction(player, chosenCard, decisionCard);
+    }
+
+    private void useSpadeKingIfNeeded(Player player){
+        Card stackCard = gameBoard.getStack().getLast();
+        if(stackCard.getRank() == Rank.K && stackCard.getSuit() == Suits.PIK){
+            executeSpadeKingTurn(player.getId(),gameBoard.getPlayers(),stackCard);
+        }
+    }
+
+    private void executeSpadeKingTurn(int currentPlayerId, List<Player> players,Card stackCard){
+        if(currentPlayerId == 0){
+            executeComputerDefenseTurn(players.get(players.size()-1),stackCard);
+        }
+        else if(currentPlayerId == 1){
+            executeHumanDefenseTurn(players.get(0),stackCard);
+        }
+        else {
+            executeComputerDefenseTurn(players.get(currentPlayerId - 1),stackCard);
+        }
     }
 
 

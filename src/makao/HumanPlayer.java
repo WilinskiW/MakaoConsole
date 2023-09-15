@@ -1,4 +1,4 @@
-import java.util.List;
+package makao;
 
 public class HumanPlayer extends Player {
     public HumanPlayer(int id) {

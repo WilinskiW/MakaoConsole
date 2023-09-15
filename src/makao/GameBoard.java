@@ -1,3 +1,5 @@
+package makao;
+
 import java.util.*;
 
 public class GameBoard {
@@ -31,7 +33,7 @@ public class GameBoard {
     }
 
 
-    public void preparPlayers(int count) {
+    public void preparePlayers(int count) {
         List<Player> players = new ArrayList<>();
         players.add(new HumanPlayer(0));
         for (int i = 1; i < count; i++) {
@@ -41,7 +43,6 @@ public class GameBoard {
     }
 
     public void givePlayersStartingCards() {
-        players.get(1).giveCard(new Card(Rank.JOKER));
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());

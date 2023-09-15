@@ -1,3 +1,4 @@
+package makao;
 
 public interface SpecialDecisionMaker {
     Card decide(Rank rank, Card stackCard);

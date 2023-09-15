@@ -1,3 +1,5 @@
+package makao;
+
 import java.util.Random;
 
 public enum Rank {

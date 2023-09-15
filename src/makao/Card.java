@@ -1,3 +1,5 @@
+package makao;
+
 public class Card {
     private Rank rank;
     private Suits suit;
