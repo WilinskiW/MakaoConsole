@@ -43,7 +43,6 @@ public class GameBoard {
     }
 
     public void givePlayersStartingCards() {
-        players.get(0).giveCard(new Card(Rank.K,Suits.PIK));
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
