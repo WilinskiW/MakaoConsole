@@ -31,7 +31,6 @@ public class DefenseController {
         } else {
             defenseCards = giveCardAgainstPLUS(computer, stackCard);
         }
-        System.out.println(defenseCards);
         return defenseCards;
     }
 
