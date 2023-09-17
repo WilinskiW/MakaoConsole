@@ -22,7 +22,7 @@ public class SpecialDecisionComputer implements SpecialDecisionMaker {
         }
 
         Card card = createTempCard(dana, rank, stackCard);
-        if (card.getRank() == null && card.getSuit() == null) {
+        if (card.getRank() == null || card.getSuit() == null) {
             return decide(rank, stackCard);
         }
         return card;

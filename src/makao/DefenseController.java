@@ -56,13 +56,13 @@ public class DefenseController {
     }
 
     public boolean isCardCanBeDefense(Card card, Card stackCard) {
-        if (card.getRank() == stackCard.getRank()) {
+        if (card.getRank() == stackCard.getRank()) { //K PIK i Kier, Two, Three, Four
             return true;
-        } else if (card.getRank().equals(Rank.THREE) && card.getSuit() == stackCard.getSuit()) {
+        } else if (card.getRank().equals(Rank.THREE) && card.getSuit() == stackCard.getSuit() && stackCard.getRank() != Rank.K) { //Trójka na dwójke
             return true;
-        } else if (card.getRank().equals(Rank.JOKER)) {
+        } else if (card.getRank().equals(Rank.JOKER)) { // Joker
             return true;
-        } else return card.getRank().equals(Rank.TWO) && card.getSuit() == stackCard.getSuit();
+        } else return card.getRank().equals(Rank.TWO) && card.getSuit() == stackCard.getSuit() && stackCard.getRank() != Rank.K; //Dwójka na trójke
     }
 
     public int findDefenseCardIndexInPlayerDeck(Card card, Player human) {

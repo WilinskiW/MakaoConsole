@@ -34,7 +34,7 @@ public class GameController {
                 continue;
             }
             computerTurns(players);
-        } while (!isVictoryAchieved()); //hasAnyoneWon
+        } while (!hasAnyoneWon());
     }
 
     private boolean humanTurn() {
@@ -181,11 +181,14 @@ public class GameController {
         Card rescueCard = gameBoard.getBoardDeck().peek();
         assert rescueCard != null;
 
+        //2-4, król pik, krol kier
+        if (player.isAttacked()) {
+            return defenseController.isCardCanBeDefense(rescueCard, stackCard);
+        }
+
         if (!player.isDemanded() && !player.isDemanding()) {
             //Joker
             if (rescueCard.getRank().equals(Rank.JOKER)) {
-                return true;
-            } else if (defenseController.isCardCanBeDefense(rescueCard, stackCard)) {    //2-4, król pik, krol kier
                 return true;
             } else {      //AS,5-10, król Trefl, król karo, Q
                 return gameBoard.compareCards(stackCard, rescueCard) || stackCard.getRank().equals(Rank.Q) || rescueCard.getRank().equals(Rank.Q);
@@ -214,9 +217,10 @@ public class GameController {
         gameBoard.addCardToStack(chosenCard, player);
         gameBoard.useCardAbility(chosenCard, player.getId(), decisionCard);
 
+        showChosenCardAction(player, chosenCard, decisionCard);
         useSpadeKingIfNeeded(player);
 
-        showChosenCardAction(player, chosenCard, decisionCard);
+
     }
 
     private void useSpadeKingIfNeeded(Player player) {
@@ -226,13 +230,17 @@ public class GameController {
         }
     }
 
+
     private void executeSpadeKingTurn(int currentPlayerId, List<Player> players, Card stackCard) {
         if (currentPlayerId == 0) {
             executeComputerDefenseTurn(players.get(players.size() - 1), stackCard);
+            executeHumanNormalTurn(players.get(0));
         } else if (currentPlayerId == 1) {
             executeHumanDefenseTurn(players.get(0), stackCard);
+            executeComputerNormanlTurn(players.get(1));
         } else {
             executeComputerDefenseTurn(players.get(currentPlayerId - 1), stackCard);
+            executeComputerNormanlTurn(players.get(currentPlayerId));
         }
     }
 
@@ -286,9 +294,7 @@ public class GameController {
     private void executeComputerDefenseTurn(Player computer, Card stackCard) {
         System.out.println("!!!!! Gracz " + (computer.getId() + 1) + " jest atakowany. Karta atakująca to:  " + stackCard + " !!!!!");
         List<Card> defenseCards = defenseController.computerDefenseOption(computer, stackCard);
-        if (!defenseCards.isEmpty()) {
-            System.out.println();
-        }
+
         boolean turnEnded;
         do {
             int defenseChoice = checkComputerChoice(defenseCards, computer);
@@ -363,7 +369,7 @@ public class GameController {
         return gameBoard.compareCards(chosenCard, stackCard);
     }
 
-    private boolean isVictoryAchieved() {
+    private boolean hasAnyoneWon() {
         for (Player player : gameBoard.getPlayers()) {
             if (player.isWinner()) {
                 System.out.println("I po Makale. Wygrywa Gracz " + (player.getId() + 1));

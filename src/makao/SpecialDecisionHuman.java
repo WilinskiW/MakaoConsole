@@ -14,20 +14,21 @@ public class SpecialDecisionHuman implements SpecialDecisionMaker {
 
         String dana = scanner.nextLine();
         Card card = createTempCard(dana, rank, stackCard);
-        if(card.getRank() == null && card.getSuit() == null){
+        if(card.getRank() == null || card.getSuit() == null){
             return decide(rank, stackCard);
         }
         return card;
     }
 
     private String giveInformationAboutJoker(Card stackCard){
+        String options = "Rangi: AS, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K ; Kolor: Kier, Karo, Pik, Trefl";
         if(stackCard.getRank() != Rank.Q){
             return "Musisz wybrać rangę lub kolor, którą chcesz zmienić. Jeżeli wybierzesz jedno z nich, drugie pozostanie bez zmian" + "\n"
-                    + "Rangi: AS, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K ; Kolor: Kier, Karo, Pik, Trefl";
+                    + options;
         }
         else {
             return "Możesz utworzyć dowolną kartę. Wpisz kartę w podanym formacie (RANK SUIT)" + "\n"
-                    + "Rangi: AS, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K ; Kolor: Kier, Karo, Pik, Trefl";
+                    + options;
         }
     }
 

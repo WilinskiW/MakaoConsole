@@ -43,6 +43,7 @@ public class GameBoard {
     }
 
     public void givePlayersStartingCards() {
+        players.get(0).giveCard(new Card(Rank.K,Suits.PIK));
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
                 player.giveCard(boardDeck.poll());
@@ -53,15 +54,21 @@ public class GameBoard {
     public void putStartingCardOnStack() {
         for (Card card : boardDeck) {
             if (Rank.isCardNonFunctional(card.getRank())) {
-                addCardToStack(card);
+                pollStartingCardToStack(card);
                 break;
             }
         }
     }
 
+    private void pollStartingCardToStack(Card card){
+        stack.add(card);
+        boardDeck.remove(card);
+    }
+
     public void addCardToStack(Card card) {
         stack.add(card);
     }
+
 
     public boolean compareCards(Card card1, Card card2) {
         return card1.getSuit() == card2.getSuit() || card1.getRank() == card2.getRank();
@@ -85,13 +92,12 @@ public class GameBoard {
 
         for (int cardIndex = 0; cardIndex < startingSize; cardIndex++) {
             Card card = stack.pollFirst();
-            System.out.println(card);
+            assert card != null;
             if (!card.isTemp()) {
                 newDeck.add(card);
             }
         }
         this.boardDeck = newDeck;
-        System.out.println(boardDeck);
     }
 
     public void checkBoardDeckStatus() {
@@ -115,7 +121,7 @@ public class GameBoard {
     }
 
     private void useAceAbility(Card decision) {
-        Card card = new Card(Rank.AS, decision.getSuit());
+        Card card = new Card(decision.getRank(), decision.getSuit());
         card.setTemp(true);
         addCardToStack(card);
     }
@@ -165,7 +171,7 @@ public class GameBoard {
     }
 
     private void useJackAbility(int currentPlayerId, Card decision) {
-        Card card = new Card(decision.getRank(), Suits.giveSuit(Suits.giveRandomSuit()));
+        Card card = new Card(decision.getRank(), decision.getSuit());
         card.setTemp(true);
         addCardToStack(card);
 
@@ -185,6 +191,7 @@ public class GameBoard {
         switch (cardSuits) {
             case "KIER" -> useHeartKing(currentPlayerId, lastIndex);
             case "PIK" -> useSpadeKing(currentPlayerId, lastIndex);
+            default -> useNormalKing();
         }
 
     }
@@ -207,6 +214,10 @@ public class GameBoard {
             addCardsToPullDeck(5);
             setAttackingStatusToNextPlayer(lastIndex);
         }
+    }
+
+    private void useNormalKing(){
+        pullDeck.clear();
     }
 
     private void useJokerAbility(int currentPlayerId, Card decision) {
