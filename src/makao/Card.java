@@ -45,7 +45,7 @@ public class Card {
     @Override
     public String toString() {
         if(!rank.name().equals("JOKER")) {
-            return rank + " " + suit;
+            return rank + " " + suit + " " + Suits.giveSuitSymbol(suit);
         }
         else {
             return rank + "";

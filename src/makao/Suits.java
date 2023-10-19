@@ -37,6 +37,21 @@ public enum Suits {
         }
     }
 
+    public static String giveSuitSymbol(Suits suit){
+        switch (suit.name()){
+            case "KIER":
+                return "♥";
+            case "KARO":
+                return "♦";
+            case "PIK":
+                return "♠";
+            case "TREFL":
+                return "♣";
+            default:
+                return null;
+        }
+    }
+
     /*
     Hearts - Kier
     Diamond - Karo
